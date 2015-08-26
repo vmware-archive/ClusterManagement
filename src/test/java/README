@@ -1,0 +1,7 @@
+Execute tests in the following order:
+
+TestClient1_1_PopulateRegions
+TestClient2_2_PopulateRegions
+
+TestClient1_3_UpdateVersions
+TestClient2_4_UpdateVersions
