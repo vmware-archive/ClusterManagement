@@ -30,6 +30,6 @@
 
   <gfe:annotation-driven/>
 
-  <bean class="com.voya.core.functions.VersionAwareRegionGetFunction"/>
+  <bean class="com.voya.core.functions.CreateRegionFunction"/>
 
 </beans>

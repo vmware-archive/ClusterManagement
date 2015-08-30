@@ -70,9 +70,7 @@ public class TestClient1_1_PopulateRegion {
   }
 
   protected Account newAccount(final String firstName, final String lastName) {
-    Account account = new Account();
-    account.setFirstName(firstName);
-    account.setLastName(lastName);
+    Account account = new Account(firstName, lastName);
     return account;
   }
 

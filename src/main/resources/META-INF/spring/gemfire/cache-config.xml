@@ -15,7 +15,7 @@
 	
  	<gfe:cache pdx-read-serialized="true" pdx-ignore-unread-fields="false" />
 	<gfe:cache-server host-name-for-clients="localhost" port="40404"/>
-	<gfe:replicated-region id="Accounts" />
+ 	<gfe:replicated-region id="Accounts" />
 
 	<gfe:function-service>
     	<gfe:function ref="getAccountFunction"/>

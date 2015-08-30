@@ -1,7 +1,5 @@
 package com.voya.core.domain;
 
-import com.voya.core.domain.support.Versionable;
-
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -10,58 +8,53 @@ import org.springframework.util.ObjectUtils;
  * @author jb
  * @see com.voya.core.domain.support.Versionable
  */
-  public class Account implements Versionable {
-
-  private static int moduleVersion = 1;
+  public class Account {
 
   private Long id;
-
   private String firstName;
   private String lastName;
-  private int version = moduleVersion;
 
-  public Account() {
+  public Account() {}
+  
+  public Account(Long id, String firstName, String lastName) {
+	  this(firstName, lastName);
+	  this.id = id;
+  }
+
+  public Account(String firstName, String lastName) {
+	  this.firstName = firstName;
+	  this.lastName = lastName;
   }
 
   public Account(final Account account) {
-    id = account.getId();
-    firstName = account.getFirstName();
-    lastName = account.getLastName();
-  }
-
-  public static int moduleVersion() {
-	  return moduleVersion;
+    this(account.getId(), account.getFirstName(), account.getLastName());
   }
   
-  public int getVersion() {
-    return version;
-  }
-
   public Long getId() {
     return id;
   }
 
-  public void setId(final Long id) {
-    this.id = id;
-  }
+  public void setId(Long id) {
+	this.id = id;
+}
 
-  public String getFirstName() {
+public String getFirstName() {
     return firstName;
-  }
-
-  public void setFirstName(final String firstName) {
-    this.firstName = firstName;
   }
 
   public String getLastName() {
     return lastName;
   }
 
-  public void setLastName(final String lastName) {
-    this.lastName = lastName;
-  }
+  public void setFirstName(String firstName) {
+	this.firstName = firstName;
+}
 
-  @Override
+public void setLastName(String lastName) {
+	this.lastName = lastName;
+}
+
+@Override
   public boolean equals(final Object obj) {
     if (obj == this) {
       return true;
@@ -73,8 +66,7 @@ import org.springframework.util.ObjectUtils;
 
     Account that = (Account) obj;
 
-    return (this.getVersion() == that.getVersion()
-      && equalsIgnoreNull(this.getId(), that.getId())
+    return (equalsIgnoreNull(this.getId(), that.getId())
       && ObjectUtils.nullSafeEquals(this.getFirstName(), that.getFirstName())
       && ObjectUtils.nullSafeEquals(this.getLastName(), that.getLastName()));
   }
@@ -86,7 +78,6 @@ import org.springframework.util.ObjectUtils;
   @Override
   public int hashCode() {
     int hashValue = 17;
-    hashValue = 37 * hashValue + ObjectUtils.nullSafeHashCode(getVersion());
     hashValue = 37 * hashValue + ObjectUtils.nullSafeHashCode(getId());
     hashValue = 37 * hashValue + ObjectUtils.nullSafeHashCode(getFirstName());
     hashValue = 37 * hashValue + ObjectUtils.nullSafeHashCode(getLastName());
@@ -96,7 +87,7 @@ import org.springframework.util.ObjectUtils;
   @Override
   public String toString() {
     return String.format("{ @type = %1$s, @version = %2$d, id = %3$d, firstName = %4$s, lastName = %5$s }",
-      getClass().getName(), getVersion(), getId(), getFirstName(), getLastName());
+      getClass().getName(), getId(), getFirstName(), getLastName());
   }
 
 }
