@@ -2,12 +2,14 @@ package com.voya.core.cache.manager;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class RegionCreator {
 	private Pool pool;
 
 	@Autowired
-	@Resource(name="voyaCache")
+	@Resource(name="gemfireClientCache")
 	private ClientCache voyaCache;
 	
 
@@ -71,7 +73,7 @@ public class RegionCreator {
 		return new GemfireCache(region);    
     }
 
-    protected RegionCreationStrategy getRegionCreationStrategy() {
+    public RegionCreationStrategy getRegionCreationStrategy() {
       Assert.state(regionCreationStrategy != null,
         "A reference to a RegionCreationStrategy was not properly configured and initialied!");
       return regionCreationStrategy;
@@ -81,7 +83,7 @@ public class RegionCreator {
       boolean createRegion(String regionNameToCreate, List<String> regionOptions, Pool pool);
     }
 
-    protected static class ServerSideRegionCreationStrategy implements RegionCreationStrategy {
+    public static class ServerSideRegionCreationStrategy implements RegionCreationStrategy {
 
       @Override
       public boolean createRegion(String regionNameToCreate, List<String> regionOptions, Pool pool) {
@@ -108,7 +110,12 @@ public class RegionCreator {
         catch(FileNotFoundException ex) {
 			throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + path.toString()));
         }
+    	catch(NoSuchFileException ex) {
+    		log.info("Could not find file " + path.toAbsolutePath());
+    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + path.toString()));
+    	}
         catch(IOException ex) {
+        	log.info(ex.toString());
 			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + path.toString()));
         }
         

@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.data.gemfire.GemfireSystemException;
 import org.springframework.data.gemfire.support.GemfireCacheManager;
@@ -21,7 +22,8 @@ public class RegionCreationGemFireCacheManager extends GemfireCacheManager {
 
 	protected final Logger log = Logger.getLogger(getClass().getName());
 	
-	RegionCreator regionCreator = new RegionCreator();
+	@Autowired
+	RegionCreator regionCreator;
 
 	@PostConstruct
 	public void init() {

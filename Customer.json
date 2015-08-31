@@ -1,0 +1,21 @@
+{
+  server: {
+    dataPolicy: "PERSISTENT_PARTITION",
+    partitionAttributes: {
+      redundantCopies: 1
+    },
+    diskStoreName: "adp-gemfire-store",
+    indexUpdateType: "synchronous",
+    //diskSynchronous: true,
+    statisticsEnabled: true,
+    "evictionAttributes": {
+      "lruHeapPercentage": {
+        "action": "overflow-to-disk"
+      }
+    }
+  },
+  client: {
+    type: "PROXY",
+    poolName: "publisher"
+  }
+}
