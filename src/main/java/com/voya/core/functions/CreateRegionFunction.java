@@ -1,15 +1,12 @@
 package com.voya.core.functions;
 
-	import java.util.logging.Logger;
+	import java.util.List;
+import java.util.logging.Logger;
 
-	import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.execute.FunctionContext;
-import com.gemstone.gemfire.cache.execute.RegionFunctionContext;
-import com.gemstone.gemfire.pdx.PdxInstance;
-
-	import org.springframework.data.gemfire.function.annotation.GemfireFunction;
+import org.springframework.data.gemfire.function.annotation.GemfireFunction;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
+
+import com.gemstone.gemfire.cache.execute.FunctionContext;
 
 	/**
 	 * The VersionedDataRegionFunction class is a GemFire Function implemented with SDG's Function annotation abstraction,
@@ -30,12 +27,16 @@ import org.springframework.util.ObjectUtils;
 	  protected final Logger log = Logger.getLogger(getClass().getName());
 
 	  @GemfireFunction(id = FUNCTION_ID, hasResult = true)
-	  public Object createRegion(final FunctionContext functionContext, final String regionNameToCreate) {
+	  public Object createRegion(final FunctionContext functionContext, List<Object> args ) {
 
-	    return doCreate(regionNameToCreate);
+		String regionNameToCreate = (String) args.get(0);
+		@SuppressWarnings("unchecked")
+		List<String> regionOptions = (List<String>) args.get(1);
+		  
+	    return doCreate(regionNameToCreate, regionOptions);
 	  }
 
-	  public boolean doCreate(String regionNameToCreate) {
+	  public boolean doCreate(String regionNameToCreate, List<String> regionOptions) {
 		  boolean wasRegionCreated = false;
 		  
 	    Assert.notNull(regionNameToCreate, String.format(
