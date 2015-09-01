@@ -1,11 +1,9 @@
 package com.voya.core.cache.manager;
 
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,13 +16,13 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.data.gemfire.GemfireSystemException;
 import org.springframework.data.gemfire.support.GemfireCache;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.client.ClientCache;
@@ -52,6 +50,8 @@ public class RegionCreator {
 	@Resource(name="gemfireClientCache")
 	private ClientCache voyaCache;
 	
+	@Value("${voya.cache.specs.directory}")
+	private String cacheSpecsDir;
 
 	@Autowired
 	private RegionCreationStrategy regionCreationStrategy;
@@ -104,7 +104,7 @@ public class RegionCreator {
     public PdxInstance readRegionOptions(String regionName) {
 
     	PdxInstance regionOptions = null;
-    	Path pathToRegionOptions = Paths.get(regionName + ".json");
+    	Path pathToRegionOptions = Paths.get(cacheSpecsDir + "/" + regionName + ".json");
     	Scanner scanner = null;
     	try {
     		scanner = new Scanner(pathToRegionOptions);

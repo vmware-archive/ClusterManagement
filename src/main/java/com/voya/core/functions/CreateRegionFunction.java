@@ -7,6 +7,7 @@ import org.springframework.data.gemfire.function.annotation.GemfireFunction;
 import org.springframework.util.Assert;
 
 import com.gemstone.gemfire.cache.execute.FunctionContext;
+import com.gemstone.gemfire.pdx.PdxInstance;
 
 	/**
 	 * The VersionedDataRegionFunction class is a GemFire Function implemented with SDG's Function annotation abstraction,
@@ -30,13 +31,12 @@ import com.gemstone.gemfire.cache.execute.FunctionContext;
 	  public Object createRegion(final FunctionContext functionContext, List<Object> args ) {
 
 		String regionNameToCreate = (String) args.get(0);
-		@SuppressWarnings("unchecked")
-		List<String> regionOptions = (List<String>) args.get(1);
+		PdxInstance regionOptions = (PdxInstance) args.get(1);
 		  
 	    return doCreate(regionNameToCreate, regionOptions);
 	  }
 
-	  public boolean doCreate(String regionNameToCreate, List<String> regionOptions) {
+	  public boolean doCreate(String regionNameToCreate, PdxInstance regionOptions) {
 		  boolean wasRegionCreated = false;
 		  
 	    Assert.notNull(regionNameToCreate, String.format(

@@ -26,8 +26,6 @@
   <gfe:cache-server auto-startup="true" bind-address="${server.bind-address}" port="${server.port}"
                     host-name-for-clients="${server.hostname-for-clients}" max-connections="${server.max-connections}"/>
 
-  <gfe:replicated-region id="Accounts" persistent="false"/>
-
   <gfe:annotation-driven/>
 
   <bean class="com.voya.core.functions.CreateRegionFunction"/>

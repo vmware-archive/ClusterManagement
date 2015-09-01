@@ -18,7 +18,7 @@
 
 
   <util:properties id="clientConfigurationSettings">
-    <prop key="voya.client.domain.model.version">1</prop>
+    <prop key="voya.cache.specs.directory">specs</prop>
   </util:properties>
 
   <context:property-placeholder location="classpath:server.properties" properties-ref="clientConfigurationSettings"/>
