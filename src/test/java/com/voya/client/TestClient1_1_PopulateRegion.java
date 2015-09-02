@@ -1,21 +1,27 @@
 package com.voya.client;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
-
-import com.voya.client.dao.AccountDao;
-import com.voya.client.service.AccountService;
-import com.voya.core.domain.Account;
-import com.gemstone.gemfire.cache.Region;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.gemstone.gemfire.cache.Region;
+import com.voya.client.dao.AccountDao;
+import com.voya.client.service.AccountService;
+import com.voya.core.domain.Account;
 
 /**
  * The TestClient class is a test suite of test classes testing data application data versioning using GemFire
@@ -35,6 +41,7 @@ public class TestClient1_1_PopulateRegion {
   private Account janeDoe;
   private Account pieDoe;
   private Account cookieDoe;
+  private final Logger log = Logger.getLogger(getClass().getName());
 
   @Autowired
   private AccountDao accountDao;
@@ -47,15 +54,20 @@ public class TestClient1_1_PopulateRegion {
 
   @Before
   public void setup() {
-	  // dummy call to create the regions
-	Account localJonDoeOne = accountService.getAccount(1L);
+	// dummy call to create the regions
+	try{
+		Account localJonDoeOne = accountService.getAccount(1L);
+	}catch(EmptyResultDataAccessException daoException){
+
+		log.log(Level.WARNING, daoException.getMessage());
+	}
 	accountsRegion.clear();
-	
-	// populate mock application client Account source 
-    jonDoe = accountDao.save(newAccount("Jon", "Doe")); 
+
+	// populate mock application client Account source
+    jonDoe = accountDao.save(newAccount("Jon", "Doe"));
     janeDoe = accountDao.save(newAccount("Jane", "Doe"));
-    pieDoe = accountDao.save(newAccount("Pie", "Doe")); 
-    cookieDoe = accountDao.save(newAccount("Cookie", "Doe")); 
+    pieDoe = accountDao.save(newAccount("Pie", "Doe"));
+    cookieDoe = accountDao.save(newAccount("Cookie", "Doe"));
 
     // put one v1 accounts into the cache
     accountsRegion.put(pieDoe.getId(), newAccount(pieDoe));
@@ -105,31 +117,31 @@ public class TestClient1_1_PopulateRegion {
 
     // assert that the object I got from the cache is equal to what I had originally put into it
     assertEquals(localJonDoeOne, localJonDoeTwo);
-    
+
     // I still should have only one cache miss
     assertEquals(1, accountDao.getCacheMissCount());
   }
-  
+
   // PIE DOE
   private void doTestCacheableHit() {
 	  assertEquals(1, accountDao.getCacheMissCount());
-	
+
 	  Account cachePieDoe = accountsRegion.get(pieDoe.getId());
-	
+
 	  assertNotNull(cachePieDoe);
 	  assertNotSame(pieDoe, cachePieDoe);
 	  assertEquals(pieDoe, cachePieDoe);
-	
+
 	  Account localPieDoeOne = accountService.getAccount(pieDoe.getId());
-	
+
 	  assertNotNull(localPieDoeOne);
 	  assertEquals(cachePieDoe, localPieDoeOne);
 	  assertNotSame(pieDoe, localPieDoeOne);
 	  assertEquals(pieDoe, localPieDoeOne);
 	  assertEquals(1, accountDao.getCacheMissCount());
-	
+
 	  Account localPieDoeTwo = accountService.getAccount(pieDoe.getId());
-	
+
 	  assertEquals(localPieDoeOne, localPieDoeTwo);
 	  assertEquals(1, accountDao.getCacheMissCount());
   }
