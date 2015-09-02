@@ -22,7 +22,7 @@ import com.gemstone.gemfire.pdx.PdxInstance;
 	@SuppressWarnings("unused")
 	public class CreateRegionFunction {
 
-	  public static final String FUNCTION_ID = "CreateRegion";
+	  public static final String FUNCTION_ID = "createRegion";
 	  private static final String metaDataRegionName = "__metadataRegion";
 
 	  protected final Logger log = Logger.getLogger(getClass().getName());
@@ -32,13 +32,13 @@ import com.gemstone.gemfire.pdx.PdxInstance;
 
 		String regionNameToCreate = (String) args.get(0);
 		PdxInstance regionOptions = (PdxInstance) args.get(1);
-		  
+
 	    return doCreate(regionNameToCreate, regionOptions);
 	  }
 
 	  public boolean doCreate(String regionNameToCreate, PdxInstance regionOptions) {
 		  boolean wasRegionCreated = false;
-		  
+
 	    Assert.notNull(regionNameToCreate, String.format(
 	      "The Region from which to fetch the versioned value for key (%1$s) must not be null!", regionNameToCreate));
 
