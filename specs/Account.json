@@ -13,10 +13,5 @@
 	              "action": "overflow-to-disk"
 	          }
 	      }
-	  },
- "client": 
-  {
-    "type": "PROXY",
-    "poolName": "publisher"
-  }
+	  }
 }
