@@ -2,11 +2,10 @@ package com.voya.core.cache.manager;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +17,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.gemfire.GemfireSystemException;
 import org.springframework.data.gemfire.support.GemfireCache;
 import org.springframework.stereotype.Component;
@@ -49,7 +49,7 @@ public class RegionCreator {
 	@Autowired
 	@Resource(name="gemfireClientCache")
 	private ClientCache voyaCache;
-	
+
 	@Value("${voya.cache.specs.directory}")
 	private String cacheSpecsDir;
 
@@ -60,9 +60,9 @@ public class RegionCreator {
 	    getRegionCreationStrategy();
 	    log.info(String.format("Using... (%1$s)", ObjectUtils.nullSafeClassName(getRegionCreationStrategy())));
 	}
-	
+
     Cache createRegion(String regionName) {
-    	
+
     	Region<?, ?> region = null;
     	PdxInstance regionOptions = readRegionOptions(regionName);
 
@@ -72,7 +72,7 @@ public class RegionCreator {
 		} else {
 			throw new GemfireSystemException(new RuntimeException("Could not create remote region"));
 		}
-		return new GemfireCache(region);    
+		return new GemfireCache(region);
     }
 
     public RegionCreationStrategy getRegionCreationStrategy() {
@@ -90,9 +90,9 @@ public class RegionCreator {
       @Override
       public boolean createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
     	List<Object> args = new ArrayList<Object>(Arrays.asList(regionNameToCreate, regionOptions));
-    	  
+
       	Execution fnExec = FunctionService.onServer(pool).withArgs(args);
-      	
+
       	ResultCollector<?, ?> collector = fnExec.execute(CreateRegionFunction.FUNCTION_ID);
       	List<?> results = (List<?>) collector.getResult();
       	boolean wasRegionCreated = (Boolean) results.get(0);
@@ -100,37 +100,49 @@ public class RegionCreator {
   		return wasRegionCreated;
       }
     }
-    
+
     public PdxInstance readRegionOptions(String regionName) {
 
     	PdxInstance regionOptions = null;
-    	Path pathToRegionOptions = Paths.get(cacheSpecsDir + "/" + regionName + ".json");
+
+    	StringBuffer jsonFileName = new StringBuffer("META-INF/");
+    	jsonFileName.append(regionName);
+    	jsonFileName.append(".json");
+
+    	ClassPathResource cpr = new ClassPathResource(jsonFileName.toString());
+    	InputStream regionOptionsIS = null;
     	Scanner scanner = null;
     	try {
-    		scanner = new Scanner(pathToRegionOptions);
-    		String regionOptionsJson = scanner.useDelimiter("\\Z").next();
-	    	regionOptions = validateRegionOptionsJson(regionOptionsJson);
+    		regionOptionsIS = cpr.getInputStream();
+    		if (regionOptionsIS != null) {
+	    		scanner = new Scanner(regionOptionsIS);
+	    		String regionOptionsJson = scanner.useDelimiter("\\Z").next();
+		    	regionOptions = validateRegionOptionsJson(regionOptionsJson);
+    		} else {
+    			throw new NoSuchFileException(jsonFileName.toString());
+    		}
     	}
 		catch (JSONFormatterException ex) {
-			log.info("Your JSON at: " + pathToRegionOptions.toAbsolutePath() + " is not correctly formatted. I cannot continue.");
-    		throw new GemfireSystemException(new RuntimeException("Your JSON at: " + pathToRegionOptions.toAbsolutePath() + " is not correctly formatted. I cannot continue."));
+			log.info("JSONFormatterException: "+ ex.getCause().getMessage());
+			log.info("Your JSON at: " + jsonFileName.toString() + " is not correctly formatted. I cannot continue.");
+    		throw new GemfireSystemException(new RuntimeException("Your JSON at: " + jsonFileName.toString() + " is not correctly formatted. I cannot continue."));
 		}
     	catch(NoSuchFileException ex) {
-    		log.info("Could not find file " + pathToRegionOptions.toAbsolutePath());
-    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + pathToRegionOptions.toString()));
+    		log.info("Could not find file " + jsonFileName.toString());
+    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + jsonFileName.toString()));
     	}
         catch(IOException ex) {
         	log.info(ex.toString());
-			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + pathToRegionOptions.toString()));
+			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + jsonFileName.toString()));
         }
     	finally {
     		if (scanner != null)
     			scanner.close();
     	}
-        
+
         return regionOptions;
     }
-    
+
     private PdxInstance validateRegionOptionsJson(String regionOptionsJson) throws JSONFormatterException {
     	PdxInstance regionOptions = null;
     	regionOptions = JSONFormatter.fromJSON(regionOptionsJson);

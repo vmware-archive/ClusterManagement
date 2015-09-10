@@ -1,11 +1,10 @@
 {
   "server":
 	  {
-	      "dataPolicy": "PERSISTENT_PARTITION",
+	      "dataPolicy": "PARTITION",
 	      "partitionAttributes": {
 	          "redundantCopies": 1
 	      },
-	      "diskStoreName": "gemfire-store",
 	      "indexUpdateType": "synchronous",
 	      "statisticsEnabled": true,
 	      "evictionAttributes": {
@@ -14,7 +13,7 @@
 	          }
 	      }
 	  },
- "client": 
+ "client":
   {
     "type": "PROXY",
     "poolName": "publisher"

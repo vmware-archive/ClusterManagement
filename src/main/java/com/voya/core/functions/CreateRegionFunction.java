@@ -22,7 +22,7 @@ import com.gemstone.gemfire.pdx.PdxInstance;
 	@SuppressWarnings("unused")
 	public class CreateRegionFunction {
 
-	  public static final String FUNCTION_ID = "createRegion";
+	  public static final String FUNCTION_ID = "CreateRegion";
 	  private static final String metaDataRegionName = "__metadataRegion";
 
 	  protected final Logger log = Logger.getLogger(getClass().getName());

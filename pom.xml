@@ -6,16 +6,16 @@
   <name>voyasdg</name>
   <description>Standalone Gemfire Server</description>
   <properties>
-  	<spring.version>3.2.9.RELEASE</spring.version>
-  	<spring.data.gemfire.version>1.4.0.RELEASE</spring.data.gemfire.version>
-    <spring-shell.version>1.0.0.RELEASE</spring-shell.version>
+    <spring.version>4.2.0.RELEASE</spring.version>
+  	<spring.data.gemfire.version>1.6.2.RELEASE</spring.data.gemfire.version>
+    <spring-shell.version>1.1.0.RELEASE</spring-shell.version>
     <slf4j.version>1.6.6</slf4j.version>
   	<log4j.version>1.2.16</log4j.version>
     <junit.version>4.11</junit.version>
 <!--     <jline.version>1.0.S2-B</jline.version> -->
     <jline.version>1.0</jline.version>
     <jansi.version>1.8</jansi.version>
-    <gemfire.version>7.0.2</gemfire.version>
+    <gemfire.version>8.1.0</gemfire.version>
   </properties>
   <dependencies>
     <!-- Spring -->
@@ -72,7 +72,7 @@
 			<version>${slf4j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
@@ -85,14 +85,14 @@
 			<version>${slf4j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
 			<scope>runtime</scope>
-		</dependency>    
-	
+		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -103,6 +103,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<version>1.0.0.RELEASE</version>
+		</dependency>
+
+		<!-- common -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.4</version>
 		</dependency>
   </dependencies>
   <repositories>
@@ -144,8 +151,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<compilerArgument>-Xlint:all</compilerArgument>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
