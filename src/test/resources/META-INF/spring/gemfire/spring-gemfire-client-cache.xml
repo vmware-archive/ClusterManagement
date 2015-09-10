@@ -37,7 +37,8 @@
   </bean>
 
   <gfe:pool id="serverConnectionPool">
-    <gfe:server host="${server.hostname-for-clients}" port="${server.port}"/>
+    <!-- <gfe:server host="${server.hostname-for-clients}" port="${server.port}"/> -->
+    <gfe:locator host="localhost" port="10334"/>
   </gfe:pool>
 
   <gfe:client-cache id="gemfireClientCache" pool-name="serverConnectionPool" pdx-serializer-ref="autoPdxSerializer"/>
@@ -55,7 +56,7 @@
   -->
 
   <bean class="com.voya.core.cache.manager.RegionCreator" />
-  
+
   <context:component-scan base-package="com.voya.client"/>
 
 </beans>
