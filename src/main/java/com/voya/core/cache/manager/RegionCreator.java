@@ -42,6 +42,8 @@ public class RegionCreator {
 
 	protected final Logger log = Logger.getLogger(getClass().getName());
 	final static Charset ENCODING = StandardCharsets.UTF_8;
+    private static final String SUCCESSFUL = "successful";
+    private static final String ALREADY_EXISTS = "alreadyExists";
 
 	@Autowired
 	private Pool pool;
@@ -61,17 +63,41 @@ public class RegionCreator {
 	    log.info(String.format("Using... (%1$s)", ObjectUtils.nullSafeClassName(getRegionCreationStrategy())));
 	}
 
+	private Region<?, ?> retrieveOrCreateRegionBasedOnremoteRegionCreationStatus
+							(String remoteRegionCreationStatus, String regionName) {
+
+		Region<?, ?> region = null;
+
+		switch (remoteRegionCreationStatus) {
+		case ALREADY_EXISTS :
+			region = voyaCache.getRegion(regionName);
+			if (region == null){
+				region = voyaCache.createClientRegionFactory
+						(ClientRegionShortcut.PROXY).create(regionName);
+			}
+			break;
+		case SUCCESSFUL :
+			region = voyaCache.createClientRegionFactory
+					(ClientRegionShortcut.PROXY).create(regionName);
+			break;
+		}
+
+		return region;
+	}
+
     Cache createRegion(String regionName) {
 
     	Region<?, ?> region = null;
     	PdxInstance regionOptions = readRegionOptions(regionName);
 
-    	boolean remoteRegionCreated = getRegionCreationStrategy().createRegion(regionName, regionOptions, pool);
-		if(remoteRegionCreated){
-			region = voyaCache.createClientRegionFactory(ClientRegionShortcut.PROXY).create(regionName);
-		} else {
-			throw new GemfireSystemException(new RuntimeException("Could not create remote region"));
-		}
+    	String remoteRegionCreationStatus = getRegionCreationStrategy().createRegion(regionName, regionOptions, pool);
+    	region = retrieveOrCreateRegionBasedOnremoteRegionCreationStatus
+    			(remoteRegionCreationStatus, regionName);
+
+    	if (region == null) {
+    		throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
+    	}
+
 		return new GemfireCache(region);
     }
 
@@ -82,21 +108,20 @@ public class RegionCreator {
     }
 
     public static interface RegionCreationStrategy {
-      boolean createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool);
+      String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool);
     }
 
     public static class ServerSideRegionCreationStrategy implements RegionCreationStrategy {
 
       @Override
-      public boolean createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
+      public String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
     	List<Object> args = new ArrayList<Object>(Arrays.asList(regionNameToCreate, regionOptions));
 
       	Execution fnExec = FunctionService.onServer(pool).withArgs(args);
 
       	ResultCollector<?, ?> collector = fnExec.execute(CreateRegionFunction.FUNCTION_ID);
       	List<?> results = (List<?>) collector.getResult();
-      	boolean wasRegionCreated = (Boolean) results.get(0);
-      	Assert.isTrue(wasRegionCreated);
+      	String wasRegionCreated = (String) results.get(0);
   		return wasRegionCreated;
       }
     }
@@ -124,8 +149,7 @@ public class RegionCreator {
     	}
 		catch (JSONFormatterException ex) {
 			log.info("JSONFormatterException: "+ ex.getCause().getMessage());
-			log.info("Your JSON at: " + jsonFileName.toString() + " is not correctly formatted. I cannot continue.");
-    		throw new GemfireSystemException(new RuntimeException("Your JSON at: " + jsonFileName.toString() + " is not correctly formatted. I cannot continue."));
+    		throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
 		}
     	catch(NoSuchFileException ex) {
     		log.info("Could not find file " + jsonFileName.toString());
