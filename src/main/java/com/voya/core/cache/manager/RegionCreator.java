@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.core.io.ClassPathResource;
@@ -25,6 +24,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.RegionExistsException;
 import com.gemstone.gemfire.cache.client.ClientCache;
 import com.gemstone.gemfire.cache.client.ClientRegionShortcut;
 import com.gemstone.gemfire.cache.client.Pool;
@@ -45,44 +45,29 @@ public class RegionCreator {
     private static final String SUCCESSFUL = "successful";
     private static final String ALREADY_EXISTS = "alreadyExists";
 
-	@Autowired
+
+    @Resource(name="serverConnectionPool")
 	private Pool pool;
 
-	@Autowired
-	@Resource(name="gemfireClientCache")
+	@Resource(name="gemfireCache")
 	private ClientCache voyaCache;
 
 	@Value("${voya.cache.specs.directory}")
 	private String cacheSpecsDir;
 
-	@Autowired
-	private RegionCreationStrategy regionCreationStrategy;
+	private RegionCreationStrategy regionCreationStrategy = new ServerSideRegionCreationStrategy();;
+
+    public void setVoyaCache(ClientCache clientCache) {
+	      this.voyaCache = clientCache;
+	}
+
+    public void setPool(Pool pool) {
+	      this.pool = pool;
+	}
 
 	void init() {
 	    getRegionCreationStrategy();
 	    log.info(String.format("Using... (%1$s)", ObjectUtils.nullSafeClassName(getRegionCreationStrategy())));
-	}
-
-	private Region<?, ?> retrieveOrCreateRegionBasedOnremoteRegionCreationStatus
-							(String remoteRegionCreationStatus, String regionName) {
-
-		Region<?, ?> region = null;
-
-		switch (remoteRegionCreationStatus) {
-		case ALREADY_EXISTS :
-			region = voyaCache.getRegion(regionName);
-			if (region == null){
-				region = voyaCache.createClientRegionFactory
-						(ClientRegionShortcut.PROXY).create(regionName);
-			}
-			break;
-		case SUCCESSFUL :
-			region = voyaCache.createClientRegionFactory
-					(ClientRegionShortcut.PROXY).create(regionName);
-			break;
-		}
-
-		return region;
 	}
 
     Cache createRegion(String regionName) {
@@ -91,7 +76,7 @@ public class RegionCreator {
     	PdxInstance regionOptions = readRegionOptions(regionName);
 
     	String remoteRegionCreationStatus = getRegionCreationStrategy().createRegion(regionName, regionOptions, pool);
-    	region = retrieveOrCreateRegionBasedOnremoteRegionCreationStatus
+    	region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
     			(remoteRegionCreationStatus, regionName);
 
     	if (region == null) {
@@ -130,7 +115,7 @@ public class RegionCreator {
 
     	PdxInstance regionOptions = null;
 
-    	StringBuffer jsonFileName = new StringBuffer("META-INF/");
+    	StringBuffer jsonFileName = new StringBuffer("config/gemfire/");
     	jsonFileName.append(regionName);
     	jsonFileName.append(".json");
 
@@ -148,7 +133,7 @@ public class RegionCreator {
     		}
     	}
 		catch (JSONFormatterException ex) {
-			log.info("JSONFormatterException: "+ ex.getCause().getMessage());
+			log.info("JSONFormatterException: "+ ex.getCause().getMessage() + "\n Is GemFire connected?");
     		throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
 		}
     	catch(NoSuchFileException ex) {
@@ -172,4 +157,38 @@ public class RegionCreator {
     	regionOptions = JSONFormatter.fromJSON(regionOptionsJson);
 		return regionOptions;
     }
+
+	private Region<?, ?> retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus(
+			String remoteRegionCreationStatus, String regionName) {
+
+		Region<?, ?> region = null;
+
+		switch (remoteRegionCreationStatus) {
+		case ALREADY_EXISTS:
+			region = voyaCache.getRegion(regionName);
+			if (region == null) {
+				region = createClientRegion(regionName);
+			}
+			break;
+		case SUCCESSFUL:
+			region = createClientRegion(regionName);
+			break;
+		}
+
+		return region;
+	}
+
+	private Region<?, ?> createClientRegion(String regionName) {
+
+		Region<?, ?> region = null;
+
+		try {
+			region = voyaCache.createClientRegionFactory
+				(ClientRegionShortcut.PROXY).create(regionName);
+		} catch (RegionExistsException ex) {
+			region = voyaCache.getRegion(regionName);
+		}
+		return region;
+	}
+
 }

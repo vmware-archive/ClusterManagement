@@ -3,11 +3,14 @@ package com.voya.core.cache.manager;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.data.gemfire.GemfireSystemException;
 import org.springframework.data.gemfire.support.GemfireCacheManager;
+
+import com.gemstone.gemfire.cache.client.Pool;
 
 /**
  * The RegionCreationCacheManager class is a GemfireCacheManager extension and implementation of the Spring Cache management
@@ -21,9 +24,13 @@ import org.springframework.data.gemfire.support.GemfireCacheManager;
 public class RegionCreationGemFireCacheManager extends GemfireCacheManager {
 
 	protected final Logger log = Logger.getLogger(getClass().getName());
-	
-	@Autowired
+
+	@Resource
 	RegionCreator regionCreator;
+
+    public void setRegionCreator(RegionCreator regionCreator) {
+	      this.regionCreator = regionCreator;
+	}
 
 	@PostConstruct
 	public void init() {
