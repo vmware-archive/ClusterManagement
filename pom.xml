@@ -9,7 +9,7 @@
     <spring.version>4.2.0.RELEASE</spring.version>
   	<spring.data.gemfire.version>1.6.2.RELEASE</spring.data.gemfire.version>
     <spring-shell.version>1.1.0.RELEASE</spring-shell.version>
-    <slf4j.version>1.6.6</slf4j.version>
+    <slf4j.version>1.7.5</slf4j.version>
   	<log4j.version>1.2.16</log4j.version>
     <junit.version>4.11</junit.version>
 <!--     <jline.version>1.0.S2-B</jline.version> -->
@@ -70,7 +70,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -83,21 +82,18 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

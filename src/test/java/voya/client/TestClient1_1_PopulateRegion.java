@@ -1,11 +1,11 @@
-package com.voya.client;
+package voya.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -13,15 +13,23 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.gemstone.gemfire.cache.Region;
-import com.voya.client.dao.AccountDao;
-import com.voya.client.service.AccountService;
-import com.voya.core.domain.Account;
+import com.gemstone.gemfire.cache.client.Pool;
+import com.gemstone.gemfire.pdx.PdxInstance;
+
+import voya.client.dao.AccountDao;
+import voya.client.service.AccountService;
+import voya.core.domain.Account;
+import voya.gemfire.core.cache.manager.RegionCreationGemFireCacheManager;
+import voya.gemfire.core.cache.manager.RegionCreator;
+import voya.gemfire.core.cache.manager.RegionCreator.RegionCreationStrategy;
+import voya.gemfire.core.cache.manager.RegionCreator.ServerSideRegionCreationStrategy;
 
 /**
  * The TestClient class is a test suite of test classes testing data application data versioning using GemFire
@@ -41,7 +49,11 @@ public class TestClient1_1_PopulateRegion {
   private Account janeDoe;
   private Account pieDoe;
   private Account cookieDoe;
-  private final Logger log = Logger.getLogger(getClass().getName());
+//  private final Logger log = Logger.getLogger(getClass().getName());
+  protected final Logger log = LoggerFactory.getLogger(getClass().getName());
+
+  private static final String SUCCESSFUL = "successful";
+  private static final String ALREADY_EXISTS = "alreadyExists";
 
   @Autowired
   private AccountDao accountDao;
@@ -49,19 +61,29 @@ public class TestClient1_1_PopulateRegion {
   @Autowired
   private AccountService accountService;
 
-  @Resource(name = "Accounts")
-  private Region<Long, Account> accountsRegion;
+  @Autowired
+  private RegionCreationStrategy regionCreationStrategy;
+
+  @Resource(name="serverConnectionPool")
+  private Pool pool;
+
+  @Autowired
+  private RegionCreator regionCreator;
+
+//  @Resource(name = "Accounts")
+//  private Region<Long, Account> accountsRegion;
+  private Map<Long, Account> accounts = null;
 
   @Before
   public void setup() {
 	// dummy call to create the regions
-	try{
+	accounts = new HashMap<Long, Account>();
+	try {
 		Account localJonDoeOne = accountService.getAccount(1L);
-	}catch(EmptyResultDataAccessException daoException){
+	} catch(EmptyResultDataAccessException daoException) {
 
-		log.log(Level.WARNING, daoException.getMessage());
+		log.warn(daoException.getMessage());
 	}
-	accountsRegion.clear();
 
 	// populate mock application client Account source
     jonDoe = accountDao.save(newAccount("Jon", "Doe"));
@@ -69,14 +91,9 @@ public class TestClient1_1_PopulateRegion {
     pieDoe = accountDao.save(newAccount("Pie", "Doe"));
     cookieDoe = accountDao.save(newAccount("Cookie", "Doe"));
 
-    // put one v1 accounts into the cache
-    accountsRegion.put(pieDoe.getId(), newAccount(pieDoe));
+    accounts.put(pieDoe.getId(), newAccount(pieDoe));
    }
 
-  @After
-  public void tearDown() {
-//    accountsRegion.clear();
-  }
   protected Account newAccount(final Account templateAccount) {
     Account account = newAccount(templateAccount.getFirstName(), templateAccount.getLastName());
     account.setId(templateAccount.getId());
@@ -86,6 +103,11 @@ public class TestClient1_1_PopulateRegion {
   protected Account newAccount(final String firstName, final String lastName) {
     Account account = new Account(firstName, lastName);
     return account;
+  }
+
+  @Test
+  public void testCacheCreationStatus() {
+	  doTestCacheCreationStatus_Positive();
   }
 
   /**
@@ -98,6 +120,20 @@ public class TestClient1_1_PopulateRegion {
   public void testCacheable() {
 	   doTestCacheableMiss();
 //	   doTestCacheableHit();
+  }
+
+  private void doTestCacheCreationStatus_Positive() {
+
+	  String regionName = "Test";
+	  PdxInstance regionOptions = regionCreator.readRegionOptions(regionName);
+	  String remoteRegionCreationStatus = regionCreationStrategy.createRegion(regionName,
+			  regionOptions, pool);
+	  assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
+
+	  remoteRegionCreationStatus = regionCreationStrategy.createRegion(regionName,
+			  regionOptions, pool);
+	  assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
+
   }
 
   // JON DOE
@@ -118,11 +154,9 @@ public class TestClient1_1_PopulateRegion {
     // assert that the object I got from the cache is equal to what I had originally put into it
     assertEquals(localJonDoeOne, localJonDoeTwo);
 
-    // I still should have only one cache miss
-    //assertEquals(1, accountDao.getCacheMissCount());
   }
 
-  // PIE DOE
+/*  // PIE DOE
   private void doTestCacheableHit() {
 	  assertEquals(1, accountDao.getCacheMissCount());
 
@@ -144,5 +178,5 @@ public class TestClient1_1_PopulateRegion {
 
 	  assertEquals(localPieDoeOne, localPieDoeTwo);
 	  assertEquals(1, accountDao.getCacheMissCount());
-  }
+  }*/
 }

@@ -1,4 +1,4 @@
-package com.voya.core.cache.manager;
+package voya.gemfire.core.cache.manager;
 
 
 import java.io.IOException;
@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.core.io.ClassPathResource;
@@ -34,16 +36,17 @@ import com.gemstone.gemfire.cache.execute.ResultCollector;
 import com.gemstone.gemfire.pdx.JSONFormatter;
 import com.gemstone.gemfire.pdx.JSONFormatterException;
 import com.gemstone.gemfire.pdx.PdxInstance;
-import com.voya.core.functions.CreateRegionFunction;
 
 
 @Component
 public class RegionCreator {
 
-	protected final Logger log = Logger.getLogger(getClass().getName());
+//	protected final Logger log = Logger.getLogger(getClass().getName());
+	protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 	final static Charset ENCODING = StandardCharsets.UTF_8;
     private static final String SUCCESSFUL = "successful";
     private static final String ALREADY_EXISTS = "alreadyExists";
+    private static final String FUNCTION_ID = "CreateRegion";
 
 
     @Resource(name="serverConnectionPool")
@@ -55,7 +58,7 @@ public class RegionCreator {
 	@Value("${voya.cache.specs.directory}")
 	private String cacheSpecsDir;
 
-	private RegionCreationStrategy regionCreationStrategy = new ServerSideRegionCreationStrategy();;
+	private RegionCreationStrategy regionCreationStrategy = new ServerSideRegionCreationStrategy();
 
     public void setVoyaCache(ClientCache clientCache) {
 	      this.voyaCache = clientCache;
@@ -80,6 +83,8 @@ public class RegionCreator {
     			(remoteRegionCreationStatus, regionName);
 
     	if (region == null) {
+//    		log.log(Level.SEVERE, "An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
+    		log.error("An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
     		throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
     	}
 
@@ -104,7 +109,7 @@ public class RegionCreator {
 
       	Execution fnExec = FunctionService.onServer(pool).withArgs(args);
 
-      	ResultCollector<?, ?> collector = fnExec.execute(CreateRegionFunction.FUNCTION_ID);
+      	ResultCollector<?, ?> collector = fnExec.execute(FUNCTION_ID);
       	List<?> results = (List<?>) collector.getResult();
       	String wasRegionCreated = (String) results.get(0);
   		return wasRegionCreated;

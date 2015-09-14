@@ -1,19 +1,21 @@
-package com.voya.client.dao.provider;
+package voya.client.dao.provider;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import com.voya.client.dao.AccountDao;
-import com.voya.core.domain.Account;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
+
+import voya.client.dao.AccountDao;
+import voya.core.domain.Account;
 
 /**
  * The AccountDaoImpl class is an implementation of the AccountDao interface used by client applications to load
@@ -21,8 +23,8 @@ import org.springframework.util.Assert;
  *
  * @author jb
  * @see org.springframework.stereotype.Repository
- * @see com.voya.client.dao.AccountDao
- * @see com.voya.core.domain.Account
+ * @see voya.client.dao.AccountDao
+ * @see voya.core.domain.Account
  */
 @Repository("accountDao")
 public class InMemoryAccountDao implements AccountDao {
@@ -33,7 +35,8 @@ public class InMemoryAccountDao implements AccountDao {
 
   private final ConcurrentMap<Long, Account> inMemoryDataSource = new ConcurrentHashMap<Long, Account>(51);
 
-  protected final Logger log = Logger.getLogger(getClass().getName());
+//  protected final Logger log = Logger.getLogger(getClass().getName());
+  protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 
   @PostConstruct
   public void init() {
