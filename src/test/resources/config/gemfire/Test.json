@@ -1,22 +1,21 @@
 {
   "server":
-	  {
-	      "dataPolicy": "PARTITION",
-	      "partitionAttributes": {
-	          "redundantCopies": 1
-	      },
-	      "diskStoreName": "gemfire-store",
-	      "indexUpdateType": "synchronous",
-	      "statisticsEnabled": true,
-	      "evictionAttributes": {
-	          "lruHeapPercentage": {
-	              "action": "overflow-to-disk"
-	          }
-	      }
-	  },
- "client":
   {
-    "type": "PROXY",
-    "poolName": "publisher"
+   "dataPolicy": "PARTITION",
+   "partitionAttributes": {
+     "redundantCopies": 1
+   },
+   "indexUpdateType": "synchronous",
+   "statisticsEnabled": true,
+   "evictionAttributes": {
+     "lruHeapPercentage": {
+      "action": "local-destroy"
+     }
+   }
+  },
+  "client":
+  {
+   "type": "PROXY",
+   "poolName": "publisher"
   }
 }

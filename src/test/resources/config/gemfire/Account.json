@@ -5,12 +5,11 @@
 	      "partitionAttributes": {
 	          "redundantCopies": 1
 	      },
-	      "diskStoreName": "gemfire-store",
 	      "indexUpdateType": "synchronous",
 	      "statisticsEnabled": true,
 	      "evictionAttributes": {
 	          "lruHeapPercentage": {
-	              "action": "overflow-to-disk"
+	              "action": "local-destroy"
 	          }
 	      }
 	  },
