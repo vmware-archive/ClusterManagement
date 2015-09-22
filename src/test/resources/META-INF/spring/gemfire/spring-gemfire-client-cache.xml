@@ -38,7 +38,7 @@
 
   <gfe:pool id="serverConnectionPool">
     <!-- <gfe:server host="${server.hostname-for-clients}" port="${server.port}"/> -->
-    <gfe:locator host="localhost" port="10334"/>
+    <gfe:locator host="gemhost" port="10334"/>
   </gfe:pool>
 
   <gfe:client-cache id="gemfireCache" pool-name="serverConnectionPool" pdx-serializer-ref="autoPdxSerializer"/>

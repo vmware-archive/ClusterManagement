@@ -11,6 +11,7 @@ tmp/
 local.properties
 .settings/
 .loadpath
+.DS_Store
 
 # Eclipse Core
 .project

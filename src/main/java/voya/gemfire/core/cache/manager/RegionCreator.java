@@ -72,7 +72,7 @@ public class RegionCreator {
 	    log.info(String.format("Using... (%1$s)", ObjectUtils.nullSafeClassName(getRegionCreationStrategy())));
 	}
 
-    Cache createRegion(String regionName) {
+    	Cache createRegion(String regionName) {
 
     	Region<?, ?> region = null;
     	PdxInstance regionOptions = readRegionOptions(regionName);
