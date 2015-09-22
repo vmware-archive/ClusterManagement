@@ -9,7 +9,7 @@
 	      "statisticsEnabled": true,
 	      "evictionAttributes": {
 	          "lruHeapPercentage": {
-	              "action": "overflow-to-disk"
+	              "action": "local-destroy"
 	          }
 	      }
 	  },

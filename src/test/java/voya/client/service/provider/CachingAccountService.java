@@ -1,16 +1,18 @@
-package com.voya.client.service.provider;
+package voya.client.service.provider;
 
-import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 
-import com.voya.client.dao.AccountDao;
-import com.voya.client.service.AccountService;
-import com.voya.core.domain.Account;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+
+import voya.client.dao.AccountDao;
+import voya.client.service.AccountService;
+import voya.core.domain.Account;
 
 /**
  * The CachingAccountsService class is an implementation of the AccountService interface implementing business functions
@@ -19,14 +21,15 @@ import org.springframework.util.Assert;
  *
  * @author jb
  * @see org.springframework.stereotype.Service
- * @see com.voya.core.domain.Account
- * @see com.voya.client.dao.AccountDao
- * @see com.voya.client.service.AccountService
+ * @see voya.core.domain.Account
+ * @see voya.client.dao.AccountDao
+ * @see voya.client.service.AccountService
  */
 @Service("accountService")
 public class CachingAccountService implements AccountService {
 
-  protected final Logger log = Logger.getLogger(getClass().getName());
+//  protected final Logger log = Logger.getLogger(getClass().getName());
+	protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 
   @Autowired
   private AccountDao accountDao;

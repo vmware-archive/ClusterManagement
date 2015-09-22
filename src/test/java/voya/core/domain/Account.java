@@ -1,4 +1,4 @@
-package com.voya.core.domain;
+package voya.core.domain;
 
 import org.springframework.util.ObjectUtils;
 
