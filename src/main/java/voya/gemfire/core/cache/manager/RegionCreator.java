@@ -137,11 +137,11 @@ public class RegionCreator {
 			log.info("JSONFormatterException: "+ ex.getCause().getMessage() + "\n Is GemFire connected?");
     		throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
 		}
-    	catch(NoSuchFileException ex) {
+    	catch (NoSuchFileException ex) {
     		log.info("Could not find file " + cpr.getPath());
     		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + cpr.getPath()));
     	}
-        catch(IOException ex) {
+        catch (IOException ex) {
         	log.info(ex.toString());
 			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + cpr.getPath()));
         }
@@ -199,7 +199,7 @@ public class RegionCreator {
 
     	ClassPathResource cpr = null;
     	cpr = new ClassPathResource(jsonFileName.toString());
-    	if(!cpr.exists()) {
+    	if (!cpr.exists()) {
     		log.info("Using the default region options JSON document.");
     		String defaultFileName = DEFAULT_REGION_OPTIONS_JSON;
     		cpr = new ClassPathResource(defaultFileName);
