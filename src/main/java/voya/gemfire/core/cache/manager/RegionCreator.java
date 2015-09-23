@@ -46,6 +46,7 @@ public class RegionCreator {
     private static final String SUCCESSFUL = "successful";
     private static final String ALREADY_EXISTS = "alreadyExists";
     private static final String FUNCTION_ID = "CreateRegion";
+    private static final String DEFAULT_REGION_OPTIONS_JSON = "config/gemfire/default.json";
 
 
     @Resource(name="serverConnectionPool")
@@ -118,14 +119,10 @@ public class RegionCreator {
     public PdxInstance readRegionOptions(String regionName) {
 
     	PdxInstance regionOptions = null;
-
-    	StringBuffer jsonFileName = new StringBuffer("config/gemfire/");
-    	jsonFileName.append(regionName);
-    	jsonFileName.append(".json");
-
-    	ClassPathResource cpr = new ClassPathResource(jsonFileName.toString());
     	InputStream regionOptionsIS = null;
     	Scanner scanner = null;
+
+    	ClassPathResource cpr = returnJsonClassPath(regionName);
     	try {
     		regionOptionsIS = cpr.getInputStream();
     		if (regionOptionsIS != null) {
@@ -133,26 +130,25 @@ public class RegionCreator {
 	    		String regionOptionsJson = scanner.useDelimiter("\\Z").next();
 		    	regionOptions = validateRegionOptionsJson(regionOptionsJson);
     		} else {
-    			throw new NoSuchFileException(jsonFileName.toString());
+    			throw new NoSuchFileException(cpr.getFilename());
     		}
     	}
 		catch (JSONFormatterException ex) {
 			log.info("JSONFormatterException: "+ ex.getCause().getMessage() + "\n Is GemFire connected?");
     		throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
 		}
-    	catch(NoSuchFileException ex) {
-    		log.info("Could not find file " + jsonFileName.toString());
-    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + jsonFileName.toString()));
+    	catch (NoSuchFileException ex) {
+    		log.info("Could not find file " + cpr.getPath());
+    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + cpr.getPath()));
     	}
-        catch(IOException ex) {
+        catch (IOException ex) {
         	log.info(ex.toString());
-			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + jsonFileName.toString()));
+			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + cpr.getPath()));
         }
     	finally {
     		if (scanner != null)
     			scanner.close();
     	}
-
         return regionOptions;
     }
 
@@ -193,6 +189,22 @@ public class RegionCreator {
 			region = voyaCache.getRegion(regionName);
 		}
 		return region;
+	}
+
+	private ClassPathResource returnJsonClassPath(String regionName) {
+
+    	StringBuffer jsonFileName = new StringBuffer("config/gemfire/");
+    	jsonFileName.append(regionName);
+    	jsonFileName.append(".json");
+
+    	ClassPathResource cpr = null;
+    	cpr = new ClassPathResource(jsonFileName.toString());
+    	if (!cpr.exists()) {
+    		log.info("Using the default region options JSON document.");
+    		String defaultFileName = DEFAULT_REGION_OPTIONS_JSON;
+    		cpr = new ClassPathResource(defaultFileName);
+    	}
+		return cpr;
 	}
 
 }
