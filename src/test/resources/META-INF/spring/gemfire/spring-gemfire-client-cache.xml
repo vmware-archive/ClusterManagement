@@ -49,8 +49,7 @@
 
   <bean id="cacheManager" class="voya.gemfire.core.cache.manager.RegionCreationGemFireCacheManager"
         p:cache-ref="gemfireCache"/>
-  <bean class="voya.gemfire.core.cache.manager.RegionCreator$ServerSideRegionCreationStrategy"/>
-  <bean class="voya.gemfire.core.cache.manager.RegionCreator" />
+   <bean class="voya.gemfire.core.cache.manager.RegionCreator" />
 
   <context:component-scan base-package="voya.client"/>
 

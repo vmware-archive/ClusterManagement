@@ -57,8 +57,6 @@ public class RegionCreator {
 	@Value("${voya.cache.specs.directory}")
 	private String cacheSpecsDir;
 
-	private RegionCreationStrategy regionCreationStrategy = new ServerSideRegionCreationStrategy();
-
     public void setVoyaCache(ClientCache clientCache) {
 	      this.voyaCache = clientCache;
 	}
@@ -68,54 +66,37 @@ public class RegionCreator {
 	}
 
 	void init() {
-	    getRegionCreationStrategy();
-	    log.info(String.format("Using... (%1$s)", ObjectUtils.nullSafeClassName(getRegionCreationStrategy())));
 	}
 
-    	Cache createRegion(String regionName) {
+	Cache createRegion(String regionName) {
 
-    	Region<?, ?> region = null;
-    	PdxInstance regionOptions = readRegionOptions(regionName);
+	  Region<?, ?> region = null;
+	  PdxInstance regionOptions = readUserDefinedRegionOptions(regionName);
+	
+	  String remoteRegionCreationStatus = createRegion(regionName, regionOptions, pool);
+	  region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
+		 (remoteRegionCreationStatus, regionName);
+	
+	  if (region == null) {
+		log.error("An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
+		throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
+	  }
 
-    	String remoteRegionCreationStatus = getRegionCreationStrategy().createRegion(regionName, regionOptions, pool);
-    	region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
-    			(remoteRegionCreationStatus, regionName);
-
-    	if (region == null) {
-//    		log.log(Level.SEVERE, "An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
-    		log.error("An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
-    		throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
-    	}
-
-		return new GemfireCache(region);
+	  return new GemfireCache(region);
     }
 
-    public RegionCreationStrategy getRegionCreationStrategy() {
-      Assert.state(regionCreationStrategy != null,
-        "A reference to a RegionCreationStrategy was not properly configured and initialied!");
-      return regionCreationStrategy;
+    public String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
+      List<Object> args = new ArrayList<Object>(Arrays.asList(regionNameToCreate, regionOptions));
+
+      Execution fnExec = FunctionService.onServer(pool).withArgs(args);
+
+      ResultCollector<?, ?> collector = fnExec.execute(FUNCTION_ID);
+      List<?> results = (List<?>) collector.getResult();
+      String wasRegionCreated = (String) results.get(0);
+  	  return wasRegionCreated;
     }
-
-    public static interface RegionCreationStrategy {
-      String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool);
-    }
-
-    public static class ServerSideRegionCreationStrategy implements RegionCreationStrategy {
-
-      @Override
-      public String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
-    	List<Object> args = new ArrayList<Object>(Arrays.asList(regionNameToCreate, regionOptions));
-
-      	Execution fnExec = FunctionService.onServer(pool).withArgs(args);
-
-      	ResultCollector<?, ?> collector = fnExec.execute(FUNCTION_ID);
-      	List<?> results = (List<?>) collector.getResult();
-      	String wasRegionCreated = (String) results.get(0);
-  		return wasRegionCreated;
-      }
-    }
-
-    public PdxInstance readRegionOptions(String regionName) {
+ 
+    public PdxInstance readUserDefinedRegionOptions(String regionName) {
 
     	PdxInstance regionOptions = null;
 

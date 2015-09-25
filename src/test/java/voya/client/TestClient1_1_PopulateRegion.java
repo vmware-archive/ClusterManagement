@@ -3,13 +3,13 @@ package voya.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,16 +20,18 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.gemstone.gemfire.cache.client.Pool;
-import com.gemstone.gemfire.pdx.PdxInstance;
-
 import voya.client.dao.AccountDao;
 import voya.client.service.AccountService;
 import voya.core.domain.Account;
-import voya.gemfire.core.cache.manager.RegionCreationGemFireCacheManager;
 import voya.gemfire.core.cache.manager.RegionCreator;
-import voya.gemfire.core.cache.manager.RegionCreator.RegionCreationStrategy;
-import voya.gemfire.core.cache.manager.RegionCreator.ServerSideRegionCreationStrategy;
+
+import com.gemstone.gemfire.cache.RegionShortcut;
+import com.gemstone.gemfire.cache.client.ClientCache;
+import com.gemstone.gemfire.cache.client.ClientCacheFactory;
+import com.gemstone.gemfire.cache.client.Pool;
+import com.gemstone.gemfire.management.cli.Result;
+import com.gemstone.gemfire.management.internal.cli.commands.CreateAlterDestroyRegionCommands;
+import com.gemstone.gemfire.pdx.PdxInstance;
 
 /**
  * The TestClient class is a test suite of test classes testing data application data versioning using GemFire
@@ -61,9 +63,6 @@ public class TestClient1_1_PopulateRegion {
   @Autowired
   private AccountService accountService;
 
-  @Autowired
-  private RegionCreationStrategy regionCreationStrategy;
-
   @Resource(name="serverConnectionPool")
   private Pool pool;
 
@@ -81,7 +80,6 @@ public class TestClient1_1_PopulateRegion {
 	try {
 		Account localJonDoeOne = accountService.getAccount(1L);
 	} catch(EmptyResultDataAccessException daoException) {
-
 		log.warn(daoException.getMessage());
 	}
 
@@ -125,12 +123,12 @@ public class TestClient1_1_PopulateRegion {
   private void doTestCacheCreationStatus_Positive() {
 
 	  String regionName = "Test";
-	  PdxInstance regionOptions = regionCreator.readRegionOptions(regionName);
-	  String remoteRegionCreationStatus = regionCreationStrategy.createRegion(regionName,
+	  PdxInstance regionOptions = regionCreator.readUserDefinedRegionOptions(regionName);
+	  String remoteRegionCreationStatus = regionCreator.createRegion(regionName,
 			  regionOptions, pool);
 	  assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
 
-	  remoteRegionCreationStatus = regionCreationStrategy.createRegion(regionName,
+	  remoteRegionCreationStatus = regionCreator.createRegion(regionName,
 			  regionOptions, pool);
 	  assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
 
@@ -155,6 +153,29 @@ public class TestClient1_1_PopulateRegion {
     assertEquals(localJonDoeOne, localJonDoeTwo);
 
   }
+  
+
+
+	@Test
+	public void testCLient() {
+		
+//      ClientCacheFactory cf = new ClientCacheFactory();
+//      cf.set("cache-xml-file", "/Users/wwilliams/Documents/git/dynamic-region-management-server/grid/config/serverCache.xml");
+//      cf.set("locators", "gemhost[10334]");
+//      ClientCache cache = cf.create();
+
+		CreateAlterDestroyRegionCommands cliCmds = new
+				CreateAlterDestroyRegionCommands();
+				Result result = cliCmds.createRegion("foo1", RegionShortcut.PARTITION,
+				null, null, true, null, null, null, null, null, null, null, null, null, null, null,
+				null, null, null, null, null, null, null, null, null, null, null, null, null,
+				null, null, null, null, null, null, null);
+				
+				System.out.println(result.toString());
+		fail("Not yet implemented");
+	}
+
+
 
 /*  // PIE DOE
   private void doTestCacheableHit() {
