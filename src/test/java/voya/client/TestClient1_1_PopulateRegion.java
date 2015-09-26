@@ -5,10 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.annotation.processing.FilerException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -157,22 +160,60 @@ public class TestClient1_1_PopulateRegion {
 
 
 	@Test
-	public void testCLient() {
+	public void testClient() {
 		
-//      ClientCacheFactory cf = new ClientCacheFactory();
-//      cf.set("cache-xml-file", "/Users/wwilliams/Documents/git/dynamic-region-management-server/grid/config/serverCache.xml");
-//      cf.set("locators", "gemhost[10334]");
-//      ClientCache cache = cf.create();
+		/* 
+		 * 0) read all_properties.csv file
+		 * 1) read region properties file
+		 * 2) read properties one by one
+		 * 3) validate each name
+		 * 4) validate each property value that it conforms to the type
+		 * 5) pass the parameters and values to the server as a map
+		 */
 
+		String regionName = "foo";
+	
 		CreateAlterDestroyRegionCommands cliCmds = new
-				CreateAlterDestroyRegionCommands();
-				Result result = cliCmds.createRegion("foo1", RegionShortcut.PARTITION,
-				null, null, true, null, null, null, null, null, null, null, null, null, null, null,
-				null, null, null, null, null, null, null, null, null, null, null, null, null,
-				null, null, null, null, null, null, null);
-				
-				System.out.println(result.toString());
-		fail("Not yet implemented");
+			CreateAlterDestroyRegionCommands();
+			Result result = cliCmds.createRegion(
+					regionName, 
+					RegionShortcut.PARTITION,			
+			null, /* 2 String template-region */
+			null, /* 3 String[] group */
+			true, /* 4 boolean skip-if-exists */
+			null, /* 5 String key-constraint */
+			null, /* 6 String value-constraint */
+			null, /* 7 boolean enable-statistics */
+			null, /* 8 Integer entry-idle-time-expiration */
+			null, /* 9 String entry-idle-time-expiration-action */
+			null, /* 10 Integer entry-time-to-live-expiration */
+			null, /* 11 String entry-time-to-live-expiration-action */
+			null, /* 12 Integer region-idle-time-expiration */
+			null, /* 13 String region-idle-time-expiration-action */
+			null, /* 14 Integer region-time-to-live-expiration */
+			null, /* 15 String region-time-to-live-expiration-action */
+			null, /* 16 String disk-store */
+			null, /* 17 Boolean enable-synchronous-disk */
+			null, /* 18 Boolean enable-async-conflation */
+			null, /* 19 Boolean enable-subscription-conflation */
+			null, /* 20 String[] cache-listener */
+			null, /* 21 String cache-loader */ 
+			null, /* 22 String cache-writer */
+			null, /* 23 String[] async-event-queue-id */
+			null, /* 24 String[] gateway-sender-id */
+			null, /* 25 Boolean enable-concurrency-check */
+			null, /* 26 Boolean enable-cloning */
+			null, /* 27 Integer concurrency-level */
+			null, /* 28 String colocated-with */
+			null, /* 29 Integer local-max-memory */
+			null, /* 30 Long recovery-delay */
+			null, /* 31 Integer redundant-copies */
+			null, /* 32 startup-recovery-delay */
+			null, /* 33 total-max-memory */
+			null, /* 34 total-num-buckets */
+			null  /* 35 compressor */
+			);
+		
 	}
 
 
@@ -200,4 +241,17 @@ public class TestClient1_1_PopulateRegion {
 	  assertEquals(localPieDoeOne, localPieDoeTwo);
 	  assertEquals(1, accountDao.getCacheMissCount());
   }*/
+	
+	private ClassPathResource classPathResource(String regionFilename) throws IOException {
+
+    	String fileName = "config/gemfire/all_properties.csv";
+
+    	ClassPathResource cpr = null;
+    	cpr = new ClassPathResource(fileName);
+    	if (!cpr.exists()) {
+    		throw new IOException("all_properties file must exist for validation to occur.");
+    	}
+		return cpr;
+	}
+
 }

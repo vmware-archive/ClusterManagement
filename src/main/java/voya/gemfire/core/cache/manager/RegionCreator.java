@@ -103,7 +103,7 @@ public class RegionCreator {
     	InputStream regionOptionsIS = null;
     	Scanner scanner = null;
 
-    	ClassPathResource cpr = returnJsonClassPath(regionName);
+    	ClassPathResource cpr = returnClassPath(regionName + ".json");
     	try {
     		regionOptionsIS = cpr.getInputStream();
     		if (regionOptionsIS != null) {
@@ -172,14 +172,12 @@ public class RegionCreator {
 		return region;
 	}
 
-	private ClassPathResource returnJsonClassPath(String regionName) {
+	private ClassPathResource returnClassPath(String regionFilename) {
 
-    	StringBuffer jsonFileName = new StringBuffer("config/gemfire/");
-    	jsonFileName.append(regionName);
-    	jsonFileName.append(".json");
+    	String fileName = "config/gemfire/" + regionFilename;
 
     	ClassPathResource cpr = null;
-    	cpr = new ClassPathResource(jsonFileName.toString());
+    	cpr = new ClassPathResource(fileName);
     	if (!cpr.exists()) {
     		log.info("Using the default region options JSON document.");
     		String defaultFileName = DEFAULT_REGION_OPTIONS_JSON;
