@@ -9,13 +9,10 @@ import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 import javax.annotation.Resource;
 
-import org.aspectj.weaver.ast.Instanceof;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +21,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.gemfire.GemfireSystemException;
 import org.springframework.data.gemfire.support.GemfireCache;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.RegionExistsException;
@@ -48,7 +47,6 @@ public class RegionCreator {
     private static final String ALREADY_EXISTS = "alreadyExists";
     private static final String FUNCTION_ID = "CreateRegion";
     private static final String DEFAULT_REGION_OPTIONS_JSON = "config/gemfire/default.json";
-    private Map<String, String> regionOptions = null;
 
 
     @Resource(name="serverConnectionPool")
@@ -69,72 +67,17 @@ public class RegionCreator {
 	}
 
 	void init() {
-		try {
-			regionOptions = RegionOptionsParser.returnAllRegionOptions();
-		} catch (IOException ex) {
-			log.info(ex.toString());
-			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file all_properties.csv"));
-		}
-	}
-
-
-	Cache createRegionNew(String regionName) {
-		Region<?, ?> region = null;
-
-
-		return null;
-	}
-
-	Map<String, String> validateUserDefinedRegionOptions(String regionName) {
-
-		String fileName = "config/gemfire/" + regionName + ".properties";
-		Map<String, String> userDefinedRegionOptions = null;
-		try {
-			userDefinedRegionOptions = RegionOptionsParser.returnUserDefinedRegionOptions(fileName);
-
-			for(Entry<String, String> option : userDefinedRegionOptions.entrySet()) {
-				if (!validateIndivisualRegionOption(option.getKey(), option.getValue())) {
-					log.info("Invalid User Defined Region Options");
-		    		throw new GemfireSystemException(new RuntimeException("Invalid User Defined Region Options"));
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return userDefinedRegionOptions;
-	}
-
-	boolean validateIndivisualRegionOption(String option, String value) {
-
-		boolean result = false;
-
-		String type = regionOptions.get(option);
-
-		if (type.equals("Integer")) {
-			Integer temp = Integer.parseInt(value);
-			if(temp != null && temp instanceof Integer) {
-				result = true;
-			}
-		} else if (type.equals("Boolean")) {
-			Boolean temp = Boolean.parseBoolean(option);
-			if( temp != null && temp instanceof Boolean) {
-				result = true;
-			}
-		}
-		return result;
 	}
 
 	Cache createRegion(String regionName) {
 
 	  Region<?, ?> region = null;
 	  PdxInstance regionOptions = readUserDefinedRegionOptions(regionName);
-
+	
 	  String remoteRegionCreationStatus = createRegion(regionName, regionOptions, pool);
 	  region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
 		 (remoteRegionCreationStatus, regionName);
-
+	
 	  if (region == null) {
 		log.error("An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
 		throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
@@ -153,7 +96,7 @@ public class RegionCreator {
       String wasRegionCreated = (String) results.get(0);
   	  return wasRegionCreated;
     }
-
+ 
     public PdxInstance readUserDefinedRegionOptions(String regionName) {
 
     	PdxInstance regionOptions = null;
