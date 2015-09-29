@@ -30,7 +30,7 @@ public class RegionOptionsLoaderTest {
 	public void testReadAllRegionOptions() {
 
 		try {
-			OptionsValidator validator = new OptionsValidator();
+			new OptionsValidator();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

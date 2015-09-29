@@ -1,29 +1,21 @@
 package voya.gemfire.core.cache.manager;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.gemfire.GemfireSystemException;
-import org.supercsv.io.ICsvBeanReader;
 
 public class RegionOptionsLoader {
 
 	private final Logger log = LoggerFactory.getLogger(getClass().getName());
 
-	private ICsvBeanReader beanReader;
-	private List<String> errorLog = new ArrayList<String>();
 	private Map<String, String> userDefinedRegionOptions = new HashMap<String, String>();
 	private static final String DEFAULT_REGION_OPTIONS_FILE = "config/gemfire/default.properties";
 	
