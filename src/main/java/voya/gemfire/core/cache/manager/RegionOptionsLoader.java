@@ -25,7 +25,8 @@ public class RegionOptionsLoader {
 	private ICsvBeanReader beanReader;
 	private List<String> errorLog = new ArrayList<String>();
 	private Map<String, String> userDefinedRegionOptions = new HashMap<String, String>();
-
+	private static final String DEFAULT_REGION_OPTIONS_FILE = "config/gemfire/default.properties";
+	
     private Properties props = new Properties();
 
     /**
@@ -39,13 +40,20 @@ public class RegionOptionsLoader {
         InputStream is = null;
         try {
             is = this.getClass().getClassLoader().getResourceAsStream(fileName);
-            props.load(is);
+            if (is == null) {
+            	loadDefaultRegionOptions();
+            }
+            else {
+            	props.load(is);
+            }
         } catch (FileNotFoundException ex) {
-    		log.info("Could not find file " + fileName);
-    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + fileName));
+        		loadDefaultRegionOptions();
         } catch (IOException ex) {
         	log.info(ex.toString());
 			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + fileName + ".\n" + ex.getMessage()));
+        } catch (Exception ex) {
+        	log.info(ex.toString());
+			throw new GemfireSystemException(new RuntimeException("Error processing Region Options file " + fileName + ".\n" + ex.getMessage()));
         } finally {
         	if (is != null)
 				try {
@@ -66,4 +74,35 @@ public class RegionOptionsLoader {
 
 		return userDefinedRegionOptions;
 	}
+	
+
+    /**
+     * Loads the user defined properties for the dynamically created region 
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
+	public void loadDefaultRegionOptions() {
+
+        InputStream is = null;
+        try {
+    		is = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_REGION_OPTIONS_FILE);
+    		props.load(is);
+        } catch (FileNotFoundException ex) {
+    		log.info("Could not find file " + DEFAULT_REGION_OPTIONS_FILE);
+    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + DEFAULT_REGION_OPTIONS_FILE));
+        } catch (IOException ex) {
+        	log.info(ex.toString());
+			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + DEFAULT_REGION_OPTIONS_FILE + ".\n" + ex.getMessage()));
+        } finally {
+        	if (is != null)
+				try {
+					is.close();
+				} catch (IOException ex) {
+		        	log.info(ex.toString());
+				}
+    	}
+	}
+        
+
 }

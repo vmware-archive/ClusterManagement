@@ -50,6 +50,17 @@ public class RegionOptionsLoaderTest {
 	}
 
 	@Test
+	public void testReadDefaultRegionOptions() {
+
+		RegionCreator regionCreator = new RegionCreator();
+		regionCreator.init();
+		Map<String, String> userDefinedRegionOptions = null;
+		userDefinedRegionOptions = regionCreator.loadValidatedRegionOptions("XXX");
+		
+		Assert.isTrue(!userDefinedRegionOptions.isEmpty());
+	}
+
+	@Test
 	public void testRegionPropertyValidation() {
 
 		RegionOptionsLoader regionOptionsReader = new RegionOptionsLoader();

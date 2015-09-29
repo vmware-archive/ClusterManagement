@@ -45,7 +45,6 @@ public class RegionCreator {
     private static final String SUCCESSFUL = "successful";
     private static final String ALREADY_EXISTS = "alreadyExists";
     private static final String FUNCTION_ID = "CreateRegion";
-    private static final String DEFAULT_REGION_OPTIONS_JSON = "config/gemfire/default.json";
     private Map<String, String> regionOptions = null;
     private OptionsValidator optionsValidator;
     private RegionOptionsLoader optionsLoader = new RegionOptionsLoader();
@@ -168,19 +167,4 @@ public class RegionCreator {
 		}
 		return region;
 	}
-
-	private ClassPathResource returnClassPath(String regionFilename) {
-
-    	String fileName = "config/gemfire/" + regionFilename;
-
-    	ClassPathResource cpr = null;
-    	cpr = new ClassPathResource(fileName);
-    	if (!cpr.exists()) {
-    		log.info("Using the default region options JSON document.");
-    		String defaultFileName = DEFAULT_REGION_OPTIONS_JSON;
-    		cpr = new ClassPathResource(defaultFileName);
-    	}
-		return cpr;
-	}
-
 }
