@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 
 import javax.annotation.Resource;
 
-import org.aspectj.weaver.ast.Instanceof;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +47,8 @@ public class RegionCreator {
     private static final String FUNCTION_ID = "CreateRegion";
     private static final String DEFAULT_REGION_OPTIONS_JSON = "config/gemfire/default.json";
     private Map<String, String> regionOptions = null;
-
+    private OptionsValidator optionsValidator;
+    private RegionOptionsLoader optionsLoader = new RegionOptionsLoader();
 
     @Resource(name="serverConnectionPool")
 	private Pool pool;
@@ -68,71 +67,41 @@ public class RegionCreator {
 	      this.pool = pool;
 	}
 
-	void init() {
+	public void init() {
 		try {
-			regionOptions = RegionOptionsParser.returnAllRegionOptions();
+			optionsValidator = new OptionsValidator();
 		} catch (IOException ex) {
 			log.info(ex.toString());
 			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file all_properties.csv"));
 		}
 	}
 
+	void validateUserDefinedRegionOptions(Map<String, String> regionProperties, String fileName) {
 
-	Cache createRegionNew(String regionName) {
-		Region<?, ?> region = null;
+		List<String> errors = new ArrayList<String>();
+		boolean areOptionsValid = optionsValidator.validateRegionProperties(regionProperties, errors);
 
-
-		return null;
-	}
-
-	Map<String, String> validateUserDefinedRegionOptions(String regionName) {
-
-		String fileName = "config/gemfire/" + regionName + ".properties";
-		Map<String, String> userDefinedRegionOptions = null;
-		try {
-			userDefinedRegionOptions = RegionOptionsParser.returnUserDefinedRegionOptions(fileName);
-
-			for(Entry<String, String> option : userDefinedRegionOptions.entrySet()) {
-				if (!validateIndivisualRegionOption(option.getKey(), option.getValue())) {
-					log.info("Invalid User Defined Region Options");
-		    		throw new GemfireSystemException(new RuntimeException("Invalid User Defined Region Options"));
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (areOptionsValid)
+			return;
+		
+		String errorString = "Error found in validating options file " + fileName + "\n";
+		for (String error : errors) {
+			errorString += error + "\n";
 		}
-
-		return userDefinedRegionOptions;
+		throw new GemfireSystemException(new RuntimeException(errorString));
 	}
 
-	boolean validateIndivisualRegionOption(String option, String value) {
-
-		boolean result = false;
-
-		String type = regionOptions.get(option);
-
-		if (type.equals("Integer")) {
-			Integer temp = Integer.parseInt(value);
-			if(temp != null && temp instanceof Integer) {
-				result = true;
-			}
-		} else if (type.equals("Boolean")) {
-			Boolean temp = Boolean.parseBoolean(option);
-			if( temp != null && temp instanceof Boolean) {
-				result = true;
-			}
-		}
-		return result;
-	}
-
+	/**
+	 * Orchestrates the cache creation from the properties files
+	 * @param regionName
+	 * @return Cache
+	 */
 	Cache createRegion(String regionName) {
 
-	  Region<?, ?> region = null;
-	  PdxInstance regionOptions = readUserDefinedRegionOptions(regionName);
-
+	  Map<String, String> regionOptions = loadValidatedRegionOptions(regionName);
+	  
 	  String remoteRegionCreationStatus = createRegion(regionName, regionOptions, pool);
-	  region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
+	  Region<?, ?> region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
 		 (remoteRegionCreationStatus, regionName);
 
 	  if (region == null) {
@@ -142,8 +111,15 @@ public class RegionCreator {
 
 	  return new GemfireCache(region);
     }
+	
+	public Map<String, String> loadValidatedRegionOptions(String regionName) {
+		  String userDefinedRegionPropertiesFileName = "config/gemfire/" + regionName + ".properties";
+		  Map<String, String> regionProperties = optionsLoader.loadUserDefinedRegionOptions(userDefinedRegionPropertiesFileName);
+		  validateUserDefinedRegionOptions(regionProperties, userDefinedRegionPropertiesFileName);
+		  return regionProperties;
+	}
 
-    public String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
+    public String createRegion(String regionNameToCreate, Map<String, String> regionOptions, Pool pool) {
       List<Object> args = new ArrayList<Object>(Arrays.asList(regionNameToCreate, regionOptions));
 
       Execution fnExec = FunctionService.onServer(pool).withArgs(args);
@@ -152,42 +128,6 @@ public class RegionCreator {
       List<?> results = (List<?>) collector.getResult();
       String wasRegionCreated = (String) results.get(0);
   	  return wasRegionCreated;
-    }
-
-    public PdxInstance readUserDefinedRegionOptions(String regionName) {
-
-    	PdxInstance regionOptions = null;
-    	InputStream regionOptionsIS = null;
-    	Scanner scanner = null;
-
-    	ClassPathResource cpr = returnClassPath(regionName + ".json");
-    	try {
-    		regionOptionsIS = cpr.getInputStream();
-    		if (regionOptionsIS != null) {
-	    		scanner = new Scanner(regionOptionsIS);
-	    		String regionOptionsJson = scanner.useDelimiter("\\Z").next();
-		    	regionOptions = validateRegionOptionsJson(regionOptionsJson);
-    		} else {
-    			throw new NoSuchFileException(cpr.getFilename());
-    		}
-    	}
-		catch (JSONFormatterException ex) {
-			log.info("JSONFormatterException: "+ ex.getCause().getMessage() + "\n Is GemFire connected?");
-    		throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
-		}
-    	catch (NoSuchFileException ex) {
-    		log.info("Could not find file " + cpr.getPath());
-    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + cpr.getPath()));
-    	}
-        catch (IOException ex) {
-        	log.info(ex.toString());
-			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + cpr.getPath()));
-        }
-    	finally {
-    		if (scanner != null)
-    			scanner.close();
-    	}
-        return regionOptions;
     }
 
     private PdxInstance validateRegionOptionsJson(String regionOptionsJson) throws JSONFormatterException {

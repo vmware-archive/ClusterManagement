@@ -126,13 +126,13 @@ public class TestClient1_1_PopulateRegion {
   private void doTestCacheCreationStatus_Positive() {
 
 	  String regionName = "Test";
-	  PdxInstance regionOptions = regionCreator.readUserDefinedRegionOptions(regionName);
+	  Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
 	  String remoteRegionCreationStatus = regionCreator.createRegion(regionName,
 			  regionOptions, pool);
 	  assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
 
 	  remoteRegionCreationStatus = regionCreator.createRegion(regionName,
-			  regionOptions, pool);
+			regionOptions, pool);
 	  assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
 
   }
