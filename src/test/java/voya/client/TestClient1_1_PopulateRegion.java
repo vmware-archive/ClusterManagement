@@ -3,14 +3,12 @@ package voya.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.annotation.processing.FilerException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,13 +26,8 @@ import voya.client.service.AccountService;
 import voya.core.domain.Account;
 import voya.gemfire.core.cache.manager.RegionCreator;
 
-import com.gemstone.gemfire.cache.RegionShortcut;
-import com.gemstone.gemfire.cache.client.ClientCache;
-import com.gemstone.gemfire.cache.client.ClientCacheFactory;
 import com.gemstone.gemfire.cache.client.Pool;
-import com.gemstone.gemfire.management.cli.Result;
-import com.gemstone.gemfire.management.internal.cli.commands.CreateAlterDestroyRegionCommands;
-import com.gemstone.gemfire.pdx.PdxInstance;
+import com.gemstone.gemfire.internal.cache.tier.sockets.command.CreateRegion;
 
 /**
  * The TestClient class is a test suite of test classes testing data application data versioning using GemFire
@@ -78,15 +71,15 @@ public class TestClient1_1_PopulateRegion {
 
   @Before
   public void setup() {
-	// dummy call to create the regions
-	accounts = new HashMap<Long, Account>();
-	try {
-		Account localJonDoeOne = accountService.getAccount(1L);
-	} catch(EmptyResultDataAccessException daoException) {
-		log.warn(daoException.getMessage());
-	}
+  // dummy call to create the regions
+  accounts = new HashMap<Long, Account>();
+  try {
+    Account localJonDoeOne = accountService.getAccount(1L);
+  } catch(EmptyResultDataAccessException daoException) {
+    log.warn(daoException.getMessage());
+  }
 
-	// populate mock application client Account source
+  // populate mock application client Account source
     jonDoe = accountDao.save(newAccount("Jon", "Doe"));
     janeDoe = accountDao.save(newAccount("Jane", "Doe"));
     pieDoe = accountDao.save(newAccount("Pie", "Doe"));
@@ -108,7 +101,7 @@ public class TestClient1_1_PopulateRegion {
 
   @Test
   public void testCacheCreationStatus() {
-	  doTestCacheCreationStatus_Positive();
+    doTestCacheCreationStatus_Positive();
   }
 
   /**
@@ -119,21 +112,21 @@ public class TestClient1_1_PopulateRegion {
    */
   @Test
   public void testCacheable() {
-	   doTestCacheableMiss();
-//	   doTestCacheableHit();
+     doTestCacheableMiss();
+//     doTestCacheableHit();
   }
 
   private void doTestCacheCreationStatus_Positive() {
 
-	  String regionName = "Test";
-	  Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
-	  String remoteRegionCreationStatus = regionCreator.createRegion(regionName,
-			  regionOptions, pool);
-	  assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
+    String regionName = "Test";
+    Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
+    String remoteRegionCreationStatus = regionCreator.createRegion(regionName,
+        regionOptions, pool);
+    assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
 
-	  remoteRegionCreationStatus = regionCreator.createRegion(regionName,
-			regionOptions, pool);
-	  assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
+    remoteRegionCreationStatus = regionCreator.createRegion(regionName,
+      regionOptions, pool);
+    assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
 
   }
 
@@ -159,99 +152,41 @@ public class TestClient1_1_PopulateRegion {
   
 
 
-	@Test
-	public void testClient() {
-		
-		/* 
-		 * 0) read all_properties.csv file
-		 * 1) read region properties file
-		 * 2) read properties one by one
-		 * 3) validate each name
-		 * 4) validate each property value that it conforms to the type
-		 * 5) pass the parameters and values to the server as a map
-		 */
-
-		String regionName = "foo";
-	
-		CreateAlterDestroyRegionCommands cliCmds = new
-			CreateAlterDestroyRegionCommands();
-			Result result = cliCmds.createRegion(
-					regionName, 
-					RegionShortcut.PARTITION,			
-			null, /* 2 String template-region */
-			null, /* 3 String[] group */
-			true, /* 4 boolean skip-if-exists */
-			null, /* 5 String key-constraint */
-			null, /* 6 String value-constraint */
-			null, /* 7 boolean enable-statistics */
-			null, /* 8 Integer entry-idle-time-expiration */
-			null, /* 9 String entry-idle-time-expiration-action */
-			null, /* 10 Integer entry-time-to-live-expiration */
-			null, /* 11 String entry-time-to-live-expiration-action */
-			null, /* 12 Integer region-idle-time-expiration */
-			null, /* 13 String region-idle-time-expiration-action */
-			null, /* 14 Integer region-time-to-live-expiration */
-			null, /* 15 String region-time-to-live-expiration-action */
-			null, /* 16 String disk-store */
-			null, /* 17 Boolean enable-synchronous-disk */
-			null, /* 18 Boolean enable-async-conflation */
-			null, /* 19 Boolean enable-subscription-conflation */
-			null, /* 20 String[] cache-listener */
-			null, /* 21 String cache-loader */ 
-			null, /* 22 String cache-writer */
-			null, /* 23 String[] async-event-queue-id */
-			null, /* 24 String[] gateway-sender-id */
-			null, /* 25 Boolean enable-concurrency-check */
-			null, /* 26 Boolean enable-cloning */
-			null, /* 27 Integer concurrency-level */
-			null, /* 28 String colocated-with */
-			null, /* 29 Integer local-max-memory */
-			null, /* 30 Long recovery-delay */
-			null, /* 31 Integer redundant-copies */
-			null, /* 32 startup-recovery-delay */
-			null, /* 33 total-max-memory */
-			null, /* 34 total-num-buckets */
-			null  /* 35 compressor */
-			);
-		
-	}
-
-
 
 /*  // PIE DOE
   private void doTestCacheableHit() {
-	  assertEquals(1, accountDao.getCacheMissCount());
+    assertEquals(1, accountDao.getCacheMissCount());
 
-	  Account cachePieDoe = accountsRegion.get(pieDoe.getId());
+    Account cachePieDoe = accountsRegion.get(pieDoe.getId());
 
-	  assertNotNull(cachePieDoe);
-	  assertNotSame(pieDoe, cachePieDoe);
-	  assertEquals(pieDoe, cachePieDoe);
+    assertNotNull(cachePieDoe);
+    assertNotSame(pieDoe, cachePieDoe);
+    assertEquals(pieDoe, cachePieDoe);
 
-	  Account localPieDoeOne = accountService.getAccount(pieDoe.getId());
+    Account localPieDoeOne = accountService.getAccount(pieDoe.getId());
 
-	  assertNotNull(localPieDoeOne);
-	  assertEquals(cachePieDoe, localPieDoeOne);
-	  assertNotSame(pieDoe, localPieDoeOne);
-	  assertEquals(pieDoe, localPieDoeOne);
-	  assertEquals(1, accountDao.getCacheMissCount());
+    assertNotNull(localPieDoeOne);
+    assertEquals(cachePieDoe, localPieDoeOne);
+    assertNotSame(pieDoe, localPieDoeOne);
+    assertEquals(pieDoe, localPieDoeOne);
+    assertEquals(1, accountDao.getCacheMissCount());
 
-	  Account localPieDoeTwo = accountService.getAccount(pieDoe.getId());
+    Account localPieDoeTwo = accountService.getAccount(pieDoe.getId());
 
-	  assertEquals(localPieDoeOne, localPieDoeTwo);
-	  assertEquals(1, accountDao.getCacheMissCount());
+    assertEquals(localPieDoeOne, localPieDoeTwo);
+    assertEquals(1, accountDao.getCacheMissCount());
   }*/
-	
-	private ClassPathResource classPathResource(String regionFilename) throws IOException {
+  
+  private ClassPathResource classPathResource(String regionFilename) throws IOException {
 
-    	String fileName = "config/gemfire/all_properties.csv";
+      String fileName = "config/gemfire/all_properties.csv";
 
-    	ClassPathResource cpr = null;
-    	cpr = new ClassPathResource(fileName);
-    	if (!cpr.exists()) {
-    		throw new IOException("all_properties file must exist for validation to occur.");
-    	}
-		return cpr;
-	}
+      ClassPathResource cpr = null;
+      cpr = new ClassPathResource(fileName);
+      if (!cpr.exists()) {
+        throw new IOException("all_properties file must exist for validation to occur.");
+      }
+    return cpr;
+  }
 
 }

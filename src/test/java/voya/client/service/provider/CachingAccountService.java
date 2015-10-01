@@ -29,7 +29,7 @@ import voya.core.domain.Account;
 public class CachingAccountService implements AccountService {
 
 //  protected final Logger log = Logger.getLogger(getClass().getName());
-	protected final Logger log = LoggerFactory.getLogger(getClass().getName());
+  protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 
   @Autowired
   private AccountDao accountDao;

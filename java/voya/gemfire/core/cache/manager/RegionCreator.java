@@ -40,9 +40,9 @@ import com.gemstone.gemfire.pdx.PdxInstance;
 @Component
 public class RegionCreator {
 
-//	protected final Logger log = Logger.getLogger(getClass().getName());
-	protected final Logger log = LoggerFactory.getLogger(getClass().getName());
-	final static Charset ENCODING = StandardCharsets.UTF_8;
+//  protected final Logger log = Logger.getLogger(getClass().getName());
+  protected final Logger log = LoggerFactory.getLogger(getClass().getName());
+  final static Charset ENCODING = StandardCharsets.UTF_8;
     private static final String SUCCESSFUL = "successful";
     private static final String ALREADY_EXISTS = "alreadyExists";
     private static final String FUNCTION_ID = "CreateRegion";
@@ -50,40 +50,40 @@ public class RegionCreator {
 
 
     @Resource(name="serverConnectionPool")
-	private Pool pool;
+  private Pool pool;
 
-	@Resource(name="gemfireCache")
-	private ClientCache voyaCache;
+  @Resource(name="gemfireCache")
+  private ClientCache voyaCache;
 
-	@Value("${voya.cache.specs.directory}")
-	private String cacheSpecsDir;
+  @Value("${voya.cache.specs.directory}")
+  private String cacheSpecsDir;
 
     public void setVoyaCache(ClientCache clientCache) {
-	      this.voyaCache = clientCache;
-	}
+        this.voyaCache = clientCache;
+  }
 
     public void setPool(Pool pool) {
-	      this.pool = pool;
-	}
+        this.pool = pool;
+  }
 
-	void init() {
-	}
+  void init() {
+  }
 
-	Cache createRegion(String regionName) {
+  Cache createRegion(String regionName) {
 
-	  Region<?, ?> region = null;
-	  PdxInstance regionOptions = readUserDefinedRegionOptions(regionName);
-	
-	  String remoteRegionCreationStatus = createRegion(regionName, regionOptions, pool);
-	  region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
-		 (remoteRegionCreationStatus, regionName);
-	
-	  if (region == null) {
-		log.error("An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
-		throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
-	  }
+    Region<?, ?> region = null;
+    PdxInstance regionOptions = readUserDefinedRegionOptions(regionName);
+  
+    String remoteRegionCreationStatus = createRegion(regionName, regionOptions, pool);
+    region = retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus
+     (remoteRegionCreationStatus, regionName);
+  
+    if (region == null) {
+    log.error("An error occured during region creation for region: " + regionName + "\n" + remoteRegionCreationStatus);
+    throw new GemfireSystemException(new RuntimeException(remoteRegionCreationStatus));
+    }
 
-	  return new GemfireCache(region);
+    return new GemfireCache(region);
     }
 
     public String createRegion(String regionNameToCreate, PdxInstance regionOptions, Pool pool) {
@@ -94,96 +94,96 @@ public class RegionCreator {
       ResultCollector<?, ?> collector = fnExec.execute(FUNCTION_ID);
       List<?> results = (List<?>) collector.getResult();
       String wasRegionCreated = (String) results.get(0);
-  	  return wasRegionCreated;
+      return wasRegionCreated;
     }
  
     public PdxInstance readUserDefinedRegionOptions(String regionName) {
 
-    	PdxInstance regionOptions = null;
-    	InputStream regionOptionsIS = null;
-    	Scanner scanner = null;
+      PdxInstance regionOptions = null;
+      InputStream regionOptionsIS = null;
+      Scanner scanner = null;
 
-    	ClassPathResource cpr = returnClassPath(regionName + ".json");
-    	try {
-    		regionOptionsIS = cpr.getInputStream();
-    		if (regionOptionsIS != null) {
-	    		scanner = new Scanner(regionOptionsIS);
-	    		String regionOptionsJson = scanner.useDelimiter("\\Z").next();
-		    	regionOptions = validateRegionOptionsJson(regionOptionsJson);
-    		} else {
-    			throw new NoSuchFileException(cpr.getFilename());
-    		}
-    	}
-		catch (JSONFormatterException ex) {
-			log.info("JSONFormatterException: "+ ex.getCause().getMessage() + "\n Is GemFire connected?");
-    		throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
-		}
-    	catch (NoSuchFileException ex) {
-    		log.info("Could not find file " + cpr.getPath());
-    		throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + cpr.getPath()));
-    	}
-        catch (IOException ex) {
-        	log.info(ex.toString());
-			throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + cpr.getPath()));
+      ClassPathResource cpr = returnClassPath(regionName + ".json");
+      try {
+        regionOptionsIS = cpr.getInputStream();
+        if (regionOptionsIS != null) {
+          scanner = new Scanner(regionOptionsIS);
+          String regionOptionsJson = scanner.useDelimiter("\\Z").next();
+          regionOptions = validateRegionOptionsJson(regionOptionsJson);
+        } else {
+          throw new NoSuchFileException(cpr.getFilename());
         }
-    	finally {
-    		if (scanner != null)
-    			scanner.close();
-    	}
+      }
+    catch (JSONFormatterException ex) {
+      log.info("JSONFormatterException: "+ ex.getCause().getMessage() + "\n Is GemFire connected?");
+        throw new GemfireSystemException(new RuntimeException("JSONFormatterException: " + ex.getCause().getMessage()));
+    }
+      catch (NoSuchFileException ex) {
+        log.info("Could not find file " + cpr.getPath());
+        throw new GemfireSystemException(new RuntimeException("Could not locate Region Options file " + cpr.getPath()));
+      }
+        catch (IOException ex) {
+          log.info(ex.toString());
+      throw new GemfireSystemException(new RuntimeException("Error reading Region Options file " + cpr.getPath()));
+        }
+      finally {
+        if (scanner != null)
+          scanner.close();
+      }
         return regionOptions;
     }
 
     private PdxInstance validateRegionOptionsJson(String regionOptionsJson) throws JSONFormatterException {
-    	PdxInstance regionOptions = null;
-    	regionOptions = JSONFormatter.fromJSON(regionOptionsJson);
-		return regionOptions;
+      PdxInstance regionOptions = null;
+      regionOptions = JSONFormatter.fromJSON(regionOptionsJson);
+    return regionOptions;
     }
 
-	private Region<?, ?> retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus(
-			String remoteRegionCreationStatus, String regionName) {
+  private Region<?, ?> retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus(
+      String remoteRegionCreationStatus, String regionName) {
 
-		Region<?, ?> region = null;
+    Region<?, ?> region = null;
 
-		switch (remoteRegionCreationStatus) {
-		case ALREADY_EXISTS:
-			region = voyaCache.getRegion(regionName);
-			if (region == null) {
-				region = createClientRegion(regionName);
-			}
-			break;
-		case SUCCESSFUL:
-			region = createClientRegion(regionName);
-			break;
-		}
+    switch (remoteRegionCreationStatus) {
+    case ALREADY_EXISTS:
+      region = voyaCache.getRegion(regionName);
+      if (region == null) {
+        region = createClientRegion(regionName);
+      }
+      break;
+    case SUCCESSFUL:
+      region = createClientRegion(regionName);
+      break;
+    }
 
-		return region;
-	}
+    return region;
+  }
 
-	private Region<?, ?> createClientRegion(String regionName) {
+  private Region<?, ?> createClientRegion(String regionName) {
 
-		Region<?, ?> region = null;
+    Region<?, ?> region = null;
 
-		try {
-			region = voyaCache.createClientRegionFactory
-				(ClientRegionShortcut.PROXY).create(regionName);
-		} catch (RegionExistsException ex) {
-			region = voyaCache.getRegion(regionName);
-		}
-		return region;
-	}
+    try {
+      region = voyaCache.createClientRegionFactory
+        (ClientRegionShortcut.PROXY).create(regionName);
+    } catch (RegionExistsException ex) {
+      region = voyaCache.getRegion(regionName);
+    }
+    return region;
+  }
 
-	private ClassPathResource returnClassPath(String regionFilename) {
+  private ClassPathResource returnClassPath(String regionFilename) {
 
-    	String fileName = "config/gemfire/" + regionFilename;
+      String fileName = "config/gemfire/" + regionFilename;
 
-    	ClassPathResource cpr = null;
-    	cpr = new ClassPathResource(fileName);
-    	if (!cpr.exists()) {
-    		log.info("Using the default region options JSON document.");
-    		String defaultFileName = DEFAULT_REGION_OPTIONS_JSON;
-    		cpr = new ClassPathResource(defaultFileName);
-    	}
-		return cpr;
-	}
+      ClassPathResource cpr = null;
+      cpr = new ClassPathResource(fileName);
+      if (!cpr.exists()) {
+        log.info("Using the default region options JSON document.");
+        String defaultFileName = DEFAULT_REGION_OPTIONS_JSON;
+        cpr = new ClassPathResource(defaultFileName);
+      }
+    return cpr;
+  }
 
 }

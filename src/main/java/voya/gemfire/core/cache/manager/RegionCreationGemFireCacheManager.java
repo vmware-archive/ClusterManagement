@@ -21,31 +21,31 @@ import org.springframework.data.gemfire.support.GemfireCacheManager;
  */
 public class RegionCreationGemFireCacheManager extends GemfireCacheManager {
 
-//	protected final Logger log = Logger.getLogger(getClass().getName());
-	protected final Logger log = LoggerFactory.getLogger(getClass().getName());
+//  protected final Logger log = Logger.getLogger(getClass().getName());
+  protected final Logger log = LoggerFactory.getLogger(getClass().getName());
 
-	@Resource
-	RegionCreator regionCreator;
+  @Resource
+  RegionCreator regionCreator;
 
     public void setRegionCreator(RegionCreator regionCreator) {
-	      this.regionCreator = regionCreator;
-	}
+        this.regionCreator = regionCreator;
+  }
 
-	@PostConstruct
-	public void init() {
-	  regionCreator.init();
-	  log.info(String.format("%1$s initialized!", getClass().getSimpleName()));
-	}
+  @PostConstruct
+  public void init() {
+    regionCreator.init();
+    log.info(String.format("%1$s initialized!", getClass().getSimpleName()));
+  }
 
-	@Override
-	public Cache getCache(String cacheName) throws GemfireSystemException{
-		Cache cache = super.getCache(cacheName);
+  @Override
+  public Cache getCache(String cacheName) throws GemfireSystemException{
+    Cache cache = super.getCache(cacheName);
 
-		if(cache == null) {
-			cache = regionCreator.createRegion(cacheName);
-			addCache(cache);
-		}
+    if(cache == null) {
+      cache = regionCreator.createRegion(cacheName);
+      addCache(cache);
+    }
 
-		return cache;
-	}
+    return cache;
+  }
 }

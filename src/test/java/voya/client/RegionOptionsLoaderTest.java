@@ -21,113 +21,113 @@ import voya.gemfire.core.cache.manager.RegionOptionsLoader;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RegionOptionsLoaderTest {
 
-	@Before
-	public void setup() {
+  @Before
+  public void setup() {
 
-	}
+  }
 
-	@Test
-	public void testReadAllRegionOptions() {
+  @Test
+  public void testReadAllRegionOptions() {
 
-		try {
-			new OptionsValidator();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    try {
+      new OptionsValidator();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
-	}
+  }
 
-	@Test
-	public void testReadUserDefinedRegionOptions() {
+  @Test
+  public void testReadUserDefinedRegionOptions() {
 
-		RegionCreator regionCreator = new RegionCreator();
-		regionCreator.init();
-		Map<String, String> userDefinedRegionOptions = null;
-		userDefinedRegionOptions = regionCreator.loadValidatedRegionOptions("Account");
-		
-		Assert.isTrue(!userDefinedRegionOptions.isEmpty());
-	}
+    RegionCreator regionCreator = new RegionCreator();
+    regionCreator.init();
+    Map<String, String> userDefinedRegionOptions = null;
+    userDefinedRegionOptions = regionCreator.loadValidatedRegionOptions("Account");
+    
+    Assert.isTrue(!userDefinedRegionOptions.isEmpty());
+  }
 
-	@Test
-	public void testReadDefaultRegionOptions() {
+  @Test
+  public void testReadDefaultRegionOptions() {
 
-		RegionCreator regionCreator = new RegionCreator();
-		regionCreator.init();
-		Map<String, String> userDefinedRegionOptions = null;
-		userDefinedRegionOptions = regionCreator.loadValidatedRegionOptions("XXX");
-		
-		Assert.isTrue(!userDefinedRegionOptions.isEmpty());
-	}
+    RegionCreator regionCreator = new RegionCreator();
+    regionCreator.init();
+    Map<String, String> userDefinedRegionOptions = null;
+    userDefinedRegionOptions = regionCreator.loadValidatedRegionOptions("XXX");
+    
+    Assert.isTrue(!userDefinedRegionOptions.isEmpty());
+  }
 
-	@Test
-	public void testRegionPropertyValidation() {
+  @Test
+  public void testRegionPropertyValidation() {
 
-		RegionOptionsLoader regionOptionsReader = new RegionOptionsLoader();
-		Map<String, String> userDefinedRegionOptions = null;
-		userDefinedRegionOptions = regionOptionsReader.loadUserDefinedRegionOptions("config/gemfire/Account.properties");
-		List<String> errors = new ArrayList<String>();
-		boolean areAllOptionsValid = false;
-		OptionsValidator validator = null;
-		
-		try {
-			validator = new OptionsValidator();
-			areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Assert.isTrue(areAllOptionsValid);
-		Assert.isTrue(errors.isEmpty());
-	}
-	
-	@Test
-	public void testMispelledOptionName() {
-		
-		Map<String, String> userDefinedRegionOptions = new HashMap<String, String>();
-		userDefinedRegionOptions.put("badOption", "1");
+    RegionOptionsLoader regionOptionsReader = new RegionOptionsLoader();
+    Map<String, String> userDefinedRegionOptions = null;
+    userDefinedRegionOptions = regionOptionsReader.loadUserDefinedRegionOptions("config/gemfire/Account.properties");
+    List<String> errors = new ArrayList<String>();
+    boolean areAllOptionsValid = false;
+    OptionsValidator validator = null;
+    
+    try {
+      validator = new OptionsValidator();
+      areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    Assert.isTrue(areAllOptionsValid);
+    Assert.isTrue(errors.isEmpty());
+  }
+  
+  @Test
+  public void testMispelledOptionName() {
+    
+    Map<String, String> userDefinedRegionOptions = new HashMap<String, String>();
+    userDefinedRegionOptions.put("badOption", "1");
 
-		List<String> errors = new ArrayList<String>();
-		boolean areAllOptionsValid = false;
-		OptionsValidator validator = null;
-		
-		try {
-			validator = new OptionsValidator();
-			areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Assert.isTrue(!areAllOptionsValid);
-		Assert.isTrue(errors.size() > 0);
-	}
+    List<String> errors = new ArrayList<String>();
+    boolean areAllOptionsValid = false;
+    OptionsValidator validator = null;
+    
+    try {
+      validator = new OptionsValidator();
+      areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    Assert.isTrue(!areAllOptionsValid);
+    Assert.isTrue(errors.size() > 0);
+  }
 
-	@Test
-	public void testBadOptionType() {
-		
-		Map<String, String> userDefinedRegionOptions = new HashMap<String, String>();
-		userDefinedRegionOptions.put("entry-idle-time-expiration", "1");
-	
-		List<String> errors = new ArrayList<String>();
-		boolean areAllOptionsValid = false;
-		OptionsValidator validator = null;
-		
-		try {
-			validator = new OptionsValidator();
-			areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Assert.isTrue(areAllOptionsValid);
-		Assert.isTrue(errors.size() == 0);
-		
-		userDefinedRegionOptions.put("entry-idle-time-expiration", "x");
-		areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
+  @Test
+  public void testBadOptionType() {
+    
+    Map<String, String> userDefinedRegionOptions = new HashMap<String, String>();
+    userDefinedRegionOptions.put("entry-idle-time-expiration", "1");
+  
+    List<String> errors = new ArrayList<String>();
+    boolean areAllOptionsValid = false;
+    OptionsValidator validator = null;
+    
+    try {
+      validator = new OptionsValidator();
+      areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    Assert.isTrue(areAllOptionsValid);
+    Assert.isTrue(errors.size() == 0);
+    
+    userDefinedRegionOptions.put("entry-idle-time-expiration", "x");
+    areAllOptionsValid = validator.validateRegionProperties(userDefinedRegionOptions, errors);
 
-		Assert.isTrue(!areAllOptionsValid);
-		Assert.isTrue(errors.size() > 0);
+    Assert.isTrue(!areAllOptionsValid);
+    Assert.isTrue(errors.size() > 0);
 
-	}
+  }
 }
