@@ -1,12 +1,11 @@
 package voya.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Resource;
 
@@ -20,6 +19,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
 
 import voya.client.dao.AccountDao;
 import voya.client.service.AccountService;
@@ -122,12 +122,69 @@ public class TestClient1_1_PopulateRegion {
     Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
     String remoteRegionCreationStatus = regionCreator.createRegion(regionName,
         regionOptions, pool);
-    assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
+    // both of the following are ok
+    if (remoteRegionCreationStatus.equals(SUCCESSFUL)) {
+    	assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
+    }
+    else {
+        if (remoteRegionCreationStatus.equals(ALREADY_EXISTS)) {
+        	assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
+        }
+    }
 
     remoteRegionCreationStatus = regionCreator.createRegion(regionName,
       regionOptions, pool);
     assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
 
+  }
+
+  @Test
+  public void testRegionNameInvalidCharacter() {
+
+    String regionName = "Te\\st";
+    Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
+    String remoteRegionCreationStatus = null;
+    try {
+	    remoteRegionCreationStatus = regionCreator.createRegion(regionName,
+	        regionOptions, pool);
+	    // both of the following are ok
+	    if (remoteRegionCreationStatus.equals(SUCCESSFUL)) {
+	    	assertEquals(SUCCESSFUL, remoteRegionCreationStatus);
+	    }
+	    else {
+	        if (remoteRegionCreationStatus.equals(ALREADY_EXISTS)) {
+	        	assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
+	        }
+	    }
+	
+	    remoteRegionCreationStatus = regionCreator.createRegion(regionName,
+	      regionOptions, pool);
+	    assertEquals(ALREADY_EXISTS, remoteRegionCreationStatus);
+    }
+    catch (Exception ex) {
+    	Assert.isNull(remoteRegionCreationStatus);
+    }
+  }
+
+
+    @Test
+    public void testRegionCreationWithMisspelledOptionName() {
+
+      Random r = new Random(System.currentTimeMillis());
+      String regionName = "Test" + r.nextInt(1000);
+      Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
+      regionOptions.put("badOption", "badValue");
+      String remoteRegionCreationStatus = null;
+  	  remoteRegionCreationStatus = regionCreator.createRegion(regionName,
+  	        regionOptions, pool);
+  	  // both of the following are ok
+  	  if (remoteRegionCreationStatus.equals(SUCCESSFUL) ||
+  	    remoteRegionCreationStatus.equals(ALREADY_EXISTS)) {
+  	    fail("This should have failed on a bad option");
+  	  }
+  	  else {
+  	    assertTrue(true);
+      }
   }
 
   // JON DOE
