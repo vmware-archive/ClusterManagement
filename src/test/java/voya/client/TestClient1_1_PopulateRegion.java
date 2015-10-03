@@ -169,7 +169,6 @@ public class TestClient1_1_PopulateRegion {
 
     @Test
     public void testRegionCreationWithMisspelledOptionName() {
-
       Random r = new Random(System.currentTimeMillis());
       String regionName = "Test" + r.nextInt(1000);
       Map<String, String> regionOptions = regionCreator.loadValidatedRegionOptions(regionName);
@@ -204,7 +203,6 @@ public class TestClient1_1_PopulateRegion {
 
     // assert that the object I got from the cache is equal to what I had originally put into it
     assertEquals(localJonDoeOne, localJonDoeTwo);
-
   }
   
 

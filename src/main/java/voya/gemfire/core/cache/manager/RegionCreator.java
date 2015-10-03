@@ -129,12 +129,6 @@ public class RegionCreator {
       return wasRegionCreated;
     }
 
-    private PdxInstance validateRegionOptionsJson(String regionOptionsJson) throws JSONFormatterException {
-      PdxInstance regionOptions = null;
-      regionOptions = JSONFormatter.fromJSON(regionOptionsJson);
-    return regionOptions;
-    }
-
   private Region<?, ?> retrieveOrCreateRegionBasedOnRemoteRegionCreationStatus(
       String remoteRegionCreationStatus, String regionName) {
 
