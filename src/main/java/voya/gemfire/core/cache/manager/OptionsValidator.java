@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Loads the entire set of all possible region options used in region creation via gfsh
- * @author wwilliams Pivotal
+ * @author Pivotal
  *
  */
 public class OptionsValidator {
