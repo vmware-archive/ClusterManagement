@@ -14,7 +14,7 @@ import org.springframework.data.gemfire.support.GemfireCacheManager;
  * The RegionCreationCacheManager class is a GemfireCacheManager extension and implementation of the Spring Cache management
  * abstraction for caching the results of Service method calls.
  *
- * @author jb
+ * @author Wes Williams, Pivotal
  * @see org.springframework.cache.Cache
  * @see org.springframework.data.gemfire.support.GemfireCacheManager
  * @see com.voya.core.functions.VersionAwareRegionGetFunction

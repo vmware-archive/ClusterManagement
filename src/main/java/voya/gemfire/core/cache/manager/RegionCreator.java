@@ -2,15 +2,12 @@ package voya.gemfire.core.cache.manager;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.annotation.Resource;
 
@@ -18,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.gemfire.GemfireSystemException;
 import org.springframework.data.gemfire.support.GemfireCache;
 import org.springframework.stereotype.Component;
@@ -31,9 +27,6 @@ import com.gemstone.gemfire.cache.client.Pool;
 import com.gemstone.gemfire.cache.execute.Execution;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
-import com.gemstone.gemfire.pdx.JSONFormatter;
-import com.gemstone.gemfire.pdx.JSONFormatterException;
-import com.gemstone.gemfire.pdx.PdxInstance;
 
 
 @Component
@@ -45,7 +38,6 @@ public class RegionCreator {
     private static final String SUCCESSFUL = "successful";
     private static final String ALREADY_EXISTS = "alreadyExists";
     private static final String FUNCTION_ID = "CreateRegion";
-    private Map<String, String> regionOptions = null;
     private OptionsValidator optionsValidator;
     private RegionOptionsLoader optionsLoader = new RegionOptionsLoader();
 
