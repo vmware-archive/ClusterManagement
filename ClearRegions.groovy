@@ -1,44 +1,76 @@
-import com.gemstone.gemfire.cache.Region
-import com.gemstone.gemfire.cache.Cache
-import com.gemstone.gemfire.cache.CacheFactory
+import com.gemstone.gemfire.cache.client.ClientCache
+import com.gemstone.gemfire.cache.client.ClientCacheFactory
+import com.gemstone.gemfire.cache.client.ClientCache
+import com.gemstone.gemfire.cache.client.ClientCacheFactory
+import com.gemstone.gemfire.cache.client.Pool
+import com.gemstone.gemfire.cache.client.PoolFactory
+import com.gemstone.gemfire.cache.client.PoolManager
+import com.gemstone.gemfire.cache.execute.Execution
+import com.gemstone.gemfire.cache.execute.FunctionService
+import com.gemstone.gemfire.cache.execute.ResultCollector
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
 /*
  * Clears all entries from a region
- * 1) Enter a comma-delimited set of regions that you want to clear
- * 2) Enter the host[port] to one of your server locators
- * 
- * Run as:  groovy -cp $GEMFIRE/lib/server-dependencies.jar ClearRegions
  */
-String[] regionNames = ["xxx"]
-String locators = "localhost[10334]"
 
-// Connect to the locator
-Cache cache = new CacheFactory()
-	.set("name", "UtilityClient")
-	.set("log-level", "error")
-	.set("mcast-port", "0")
-	.set("locators", locators)
-	.create();
+// parse the command line args for a locator and regions using Apache CliBuilder
+def cl = new CliBuilder(usage: 'ClearRegions_1 -l "locatorHost" -p "nnnnn"  [regions]*')
+cl.l(argName:'locator', longOpt:'locator', args:1, required:true, 'Name of a locator host in the pool, REQUIRED')
+cl.p(argName:'port', longOpt:'port', args:1, required:true, 'the port number of the locator, REQUIRED')
+def opt = cl.parse(args)
 
-	// delete all entries in the region names
-for (String regionName : regionNames) {
+String locatorHost = opt.l
+int locatorPort = Integer.parseInt(opt.p)
+List<String> regionNameList = opt.arguments()
 
-	// Get the region
-	System.out.println("-----------------------------")
-	System.out.println("Processing region " + regionName)
-	Region<?, ?> region = cache.getRegion(regionName);
-	
-	println("Located the region " + region.getName());
-	
-	// get all the keys in the region
-	Set<?> keys = region.keySet()
-	System.out.println("removing " + keys.size() + " values");
-	
-	// remove all values
-	region.removeAll(keys)
-	println("Remaining entry count: " + region.keySet().size());
-	println()
+// Create a client cache 
+ClientCache cache = new ClientCacheFactory()
+		.set("name", "RegionCleaner")
+		.set("log-level", "error")
+		.create();
+
+// create a connection pool to the locators		
+PoolFactory factory = PoolManager.createFactory();
+factory.addLocator(locatorHost, locatorPort);
+Pool pool = factory.create("pool");
+
+String regionNames = regionNameList.join(",");
+String[] regionNameArray = regionNames.split(",")
+
+System.out.println("-----------------------------")
+System.out.println("Processing regions " + regionNames)
+
+// pass the region name to the Clear Region function
+Execution execution = FunctionService.onServer(pool).withArgs(regionNames);
+ResultCollector rc = execution.execute("ClearRegion");
+
+// print the number of entries deleted. If an error was sent back, print it
+List<?> results;
+int resultIx = 0;
+try {
+	results = rc.getResult();
+	println("Number of results=" + (results.size() - 1))
+	for (; resultIx < results.size(); resultIx++) {
+	  Object resultObj = results.get(resultIx);
+	  if (resultObj instanceof Integer) {
+		  Integer numberOfEntriesRemoved = (Integer) resultObj;
+		  println("Number of entries deleted in region " + regionNameArray[resultIx] + ": " + numberOfEntriesRemoved);	
+	  }
+	  else if (resultObj instanceof String && ((String) resultObj).length() == 0) {
+		// last entry
+		break;
+	  }
+	  else {
+	    println ("Error processing region " + regionNameArray[resultIx] + ": " + resultObj);
+      }
+	}
 }
+catch (MissingMethodException | GroovyCastException e) {
+	String exception = results.get(resultIx);
+	println ("Error getting results[ " + (resultIx + 1) + "]:" + exception);
+}
+println()
 
 System.out.println("Done");
 System.out.println();

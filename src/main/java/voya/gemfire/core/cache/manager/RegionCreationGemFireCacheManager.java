@@ -21,9 +21,8 @@ import org.springframework.data.gemfire.support.GemfireCacheManager;
  */
 public class RegionCreationGemFireCacheManager extends GemfireCacheManager {
 
-//  protected final Logger log = Logger.getLogger(getClass().getName());
   protected final Logger log = LoggerFactory.getLogger(getClass().getName());
-
+  
   @Resource
   RegionCreator regionCreator;
 
