@@ -1,4 +1,4 @@
-package voya.gemfire.core.cache.manager;
+package gemfire.core.cache.manager;
 
 
 import javax.annotation.PostConstruct;
@@ -17,7 +17,6 @@ import org.springframework.data.gemfire.support.GemfireCacheManager;
  * @author Wes Williams, Pivotal
  * @see org.springframework.cache.Cache
  * @see org.springframework.data.gemfire.support.GemfireCacheManager
- * @see com.voya.core.functions.VersionAwareRegionGetFunction
  */
 public class RegionCreationGemFireCacheManager extends GemfireCacheManager {
 
@@ -36,12 +35,15 @@ public class RegionCreationGemFireCacheManager extends GemfireCacheManager {
     log.info(String.format("%1$s initialized!", getClass().getSimpleName()));
   }
 
+  /**
+   * create server and client regions if the client region does not exist
+   */
   @Override
   public Cache getCache(String cacheName) throws GemfireSystemException{
     Cache cache = super.getCache(cacheName);
 
     if(cache == null) {
-      cache = regionCreator.createRegion(cacheName);
+      cache = regionCreator.createRegions(cacheName);
       addCache(cache);
     }
 

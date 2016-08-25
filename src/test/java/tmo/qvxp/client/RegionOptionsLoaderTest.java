@@ -1,4 +1,4 @@
-package voya.client;
+package tmo.qvxp.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-import voya.gemfire.core.cache.manager.OptionsValidator;
-import voya.gemfire.core.cache.manager.RegionCreator;
-import voya.gemfire.core.cache.manager.RegionOptionsLoader;
+import gemfire.core.cache.manager.OptionsValidator;
+import gemfire.core.cache.manager.RegionCreator;
+import gemfire.core.cache.manager.RegionOptionsLoader;
 
 @ContextConfiguration("/META-INF/spring/gemfire/spring-gemfire-client-cache.xml")
 @RunWith(SpringJUnit4ClassRunner.class)

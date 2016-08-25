@@ -1,12 +1,11 @@
-package voya.core.domain;
+package tmo.qvxp.core.domain;
 
 import org.springframework.util.ObjectUtils;
 
 /**
  * The Account class is an abstract data type (ADT) for modeling a VOYA Account.
  *
- * @author jb
- * @see com.voya.core.domain.support.Versionable
+ * @author Pivotal
  */
   public class Account {
 

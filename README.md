@@ -13,7 +13,7 @@ TestClient2_4_UpdateVersions
 
 
 Spring Data Gemfire - Standalone Template
-================================================================================
+==============================================================================
 
 This template demonstrates using Spring Data Gemfire in a standalone Java application with an embedded cache and a single region with a simple CacheListener.
 
@@ -30,4 +30,3 @@ For help please take a look at the Spring Data Gemfire documentation:
 
 http://www.springsource.org/spring-gemfire
 
-# VoyaApp

@@ -1,4 +1,4 @@
-package voya.client.service.provider;
+package tmo.qvxp.client.service.provider;
 
 
 import javax.annotation.PostConstruct;
@@ -10,9 +10,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import voya.client.dao.AccountDao;
-import voya.client.service.AccountService;
-import voya.core.domain.Account;
+import tmo.qvxp.client.dao.AccountDao;
+import tmo.qvxp.client.service.AccountService;
+import tmo.qvxp.core.domain.Account;
 
 /**
  * The CachingAccountsService class is an implementation of the AccountService interface implementing business functions
@@ -21,9 +21,9 @@ import voya.core.domain.Account;
  *
  * @author jb
  * @see org.springframework.stereotype.Service
- * @see voya.core.domain.Account
- * @see voya.client.dao.AccountDao
- * @see voya.client.service.AccountService
+ * @see tmo.qvxp.core.domain.Account
+ * @see tmo.qvxp.client.dao.AccountDao
+ * @see tmo.qvxp.client.service.AccountService
  */
 @Service("accountService")
 public class CachingAccountService implements AccountService {

@@ -1,4 +1,4 @@
-package voya.domain;
+package tmo.qvxp.domain;
 
 public class RegionOption {
   

@@ -3,6 +3,7 @@
 .gradle
 bin/
 target/
+build/
 tmp/
 *.tmp
 *.bak
@@ -12,6 +13,8 @@ local.properties
 .settings/
 .loadpath
 .DS_Store
+BACKUP*
+DRLK*
 
 # Eclipse Core
 .project
@@ -42,3 +45,24 @@ vf*
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# gemfire artifacts
+grid/locator1/*.zip
+grid/locator1/*.log
+grid/locator1/*.dat
+grid/locator1/Gem*
+grid/locator1/cluster_config/cluster/*.jar
+grid/locator1/ConfigDiskDir_locator1/
+grid/server*
+
+databrowser/grid/locator1/
+databrowser/grid/serverx/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# SpringXD
+spring-shell.log
+ 
+/Function Performance Analysis.xlsx

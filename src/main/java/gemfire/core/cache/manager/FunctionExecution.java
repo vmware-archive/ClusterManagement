@@ -1,4 +1,4 @@
-package voya.gemfire.core.cache.manager;
+package gemfire.core.cache.manager;
 
 import org.springframework.data.gemfire.function.annotation.FunctionId;
 import org.springframework.data.gemfire.function.annotation.OnServer;

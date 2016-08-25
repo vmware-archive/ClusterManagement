@@ -1,71 +1,72 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.voya</groupId>
-  <artifactId>dynamic-region-management-client</artifactId>
-  <version>2.0.2</version>
-  <name>VoyaClient</name>
-  <description>Spring GemFire Client for Dynamic Region Creation</description>
-  <properties>
-    <spring.version>4.2.0.RELEASE</spring.version>
-  	<spring.data.gemfire.version>1.6.2.RELEASE</spring.data.gemfire.version>
-    <spring-shell.version>1.1.0.RELEASE</spring-shell.version>
-    <slf4j.version>1.7.5</slf4j.version>
-  	<log4j.version>1.2.16</log4j.version>
-    <junit.version>4.11</junit.version>
-<!--     <jline.version>1.0.S2-B</jline.version> -->
-    <jline.version>1.0</jline.version>
-    <jansi.version>1.8</jansi.version>
-    <gemfire.version>8.1.0</gemfire.version>
-  </properties>
-  <dependencies>
-    <!-- Spring -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-  		<groupId>org.springframework.data</groupId>
-  		<artifactId>spring-data-gemfire</artifactId>
-  		<version>${spring.data.gemfire.version}</version>
-  	</dependency>
-    <dependency>
-      <groupId>org.springframework.shell</groupId>
-      <artifactId>spring-shell</artifactId>
-      <version>${spring-shell.version}</version>
-      <scope>runtime</scope>
-    </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.tmo</groupId>
+	<artifactId>dynamic-region-management-client</artifactId>
+	<version>2.0.2</version>
+	<name>QVXPClient</name>
+	<description>Spring GemFire Client for Dynamic Region Creation</description>
+	<properties>
+		<spring.version>4.2.0.RELEASE</spring.version>
+		<spring.data.gemfire.version>1.6.2.RELEASE</spring.data.gemfire.version>
+		<spring-shell.version>1.1.0.RELEASE</spring-shell.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<log4j.version>1.2.16</log4j.version>
+		<junit.version>4.11</junit.version>
+		<!-- <jline.version>1.0.S2-B</jline.version> -->
+		<jline.version>1.0</jline.version>
+		<jansi.version>1.8</jansi.version>
+		<gemfire.version>8.1.0</gemfire.version>
+	</properties>
+	<dependencies>
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-gemfire</artifactId>
+			<version>${spring.data.gemfire.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.shell</groupId>
+			<artifactId>spring-shell</artifactId>
+			<version>${spring-shell.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
-    <!-- GemFire -->
-    <dependency>
-      <groupId>com.gemstone.gemfire</groupId>
-      <artifactId>gemfire</artifactId>
-      <version>${gemfire.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>jline</groupId>
-      <artifactId>jline</artifactId>
-      <version>${jline.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.fusesource.jansi</groupId>
-      <artifactId>jansi</artifactId>
-      <version>${jansi.version}</version>
-      <scope>runtime</scope>
-    </dependency>
+		<!-- GemFire -->
+		<dependency>
+			<groupId>com.gemstone.gemfire</groupId>
+			<artifactId>gemfire</artifactId>
+			<version>${gemfire.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>${jline.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.fusesource.jansi</groupId>
+			<artifactId>jansi</artifactId>
+			<version>${jansi.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
-    <!-- Testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
 
-    <!-- Logging -->
+		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -103,9 +104,9 @@
 
 		<!-- common -->
 		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-lang3</artifactId>
-		    <version>3.4</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
 		</dependency>
 
 		<dependency>
@@ -113,8 +114,17 @@
 			<artifactId>spring-boot-starter-batch</artifactId>
 			<version>1.0.0.RELEASE</version>
 		</dependency>
-  </dependencies>
-  <repositories>
+
+		<dependency>
+			<groupId>io.pivotal.gfsh</groupId>
+			<artifactId>clusterManager</artifactId>
+			<version>0.0.1</version>
+			<scope>compile</scope>
+		</dependency>
+
+
+	</dependencies>
+	<repositories>
 		<repository>
 			<id>repo.springsource.org.milestone</id>
 			<name>Spring Framework Milestone Repository</name>
@@ -126,7 +136,7 @@
 			<url>https://repo.springsource.org/release</url>
 		</repository>
 		<repository>
-		<id>repo.springsource.org.plugins.release</id>
+			<id>repo.springsource.org.plugins.release</id>
 			<name>Spring Framework Dependencies Repository</name>
 			<url>http://repo.springsource.org/plugins-release</url>
 		</repository>

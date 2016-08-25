@@ -18,7 +18,7 @@
 
 
   <util:properties id="clientConfigurationSettings">
-    <prop key="voya.cache.specs.directory">specs</prop>
+    <prop key="cache.specs.directory">specs</prop>
   </util:properties>
 
   <context:property-placeholder location="classpath:server.properties" properties-ref="clientConfigurationSettings"/>
@@ -31,7 +31,7 @@
     <constructor-arg type="boolean" value="true"/>
     <constructor-arg>
       <list>
-        <value>voya.core.domain.Account</value>
+        <value>tmo.qvxp.core.domain.Account</value>
       </list>
     </constructor-arg>
   </bean>
@@ -47,10 +47,10 @@
 
   <cache:annotation-driven/>
 
-  <bean id="cacheManager" class="voya.gemfire.core.cache.manager.RegionCreationGemFireCacheManager"
+  <bean id="cacheManager" class="gemfire.core.cache.manager.RegionCreationGemFireCacheManager"
         p:cache-ref="gemfireCache"/>
-   <bean class="voya.gemfire.core.cache.manager.RegionCreator" />
+   <bean class="gemfire.core.cache.manager.RegionCreator" />
 
-  <context:component-scan base-package="voya.client"/>
+  <context:component-scan base-package="tmo.qvxp.client"/>
 
 </beans>

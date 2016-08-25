@@ -1,4 +1,4 @@
-package voya.gemfire.core.cache.manager;
+package gemfire.core.cache.manager;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

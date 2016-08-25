@@ -1,4 +1,4 @@
-package voya.client.dao.provider;
+package tmo.qvxp.client.dao.provider;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -14,8 +14,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
-import voya.client.dao.AccountDao;
-import voya.core.domain.Account;
+import tmo.qvxp.client.dao.AccountDao;
+import tmo.qvxp.core.domain.Account;
 
 /**
  * The AccountDaoImpl class is an implementation of the AccountDao interface used by client applications to load
@@ -23,8 +23,8 @@ import voya.core.domain.Account;
  *
  * @author jb
  * @see org.springframework.stereotype.Repository
- * @see voya.client.dao.AccountDao
- * @see voya.core.domain.Account
+ * @see tmo.qvxp.client.dao.AccountDao
+ * @see tmo.qvxp.core.domain.Account
  */
 @Repository("accountDao")
 public class InMemoryAccountDao implements AccountDao {

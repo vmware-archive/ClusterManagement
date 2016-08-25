@@ -43,32 +43,33 @@ System.out.println("Processing regions " + regionNames)
 
 // pass the region name to the Clear Region function
 Execution execution = FunctionService.onServer(pool).withArgs(regionNames);
-ResultCollector rc = execution.execute("ClearRegion");
+ResultCollector rc = execution.execute("ClearRegionFunction");
 
 // print the number of entries deleted. If an error was sent back, print it
-List<?> results;
+List<String> results;
 int resultIx = 0;
-try {
+boolean hasMore=true;
+while (hasMore) {
+  try {
 	results = rc.getResult();
 	println("Number of results=" + (results.size() - 1))
-	for (; resultIx < results.size(); resultIx++) {
-	  Object resultObj = results.get(resultIx);
-	  if (resultObj instanceof Integer) {
-		  Integer numberOfEntriesRemoved = (Integer) resultObj;
-		  println("Number of entries deleted in region " + regionNameArray[resultIx] + ": " + numberOfEntriesRemoved);	
+	for (String result : results) {
+	  if (result == null) {
+		  hasMore = false;
+	      break;
 	  }
-	  else if (resultObj instanceof String && ((String) resultObj).length() == 0) {
+	  if (result.length() == 0) {
 		// last entry
-		break;
+		  hasMore = false;
+		  break;
 	  }
-	  else {
-	    println ("Error processing region " + regionNameArray[resultIx] + ": " + resultObj);
-      }
+	  println(result);	
 	}
-}
-catch (MissingMethodException | GroovyCastException e) {
+  }
+  catch (MissingMethodException | GroovyCastException e) {
 	String exception = results.get(resultIx);
 	println ("Error getting results[ " + (resultIx + 1) + "]:" + exception);
+  }
 }
 println()
 

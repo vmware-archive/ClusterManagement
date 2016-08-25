@@ -28,6 +28,5 @@
 
   <gfe:annotation-driven/>
 
-<!--   <bean class="com.voya.core.functions.CreateRegionFunction"/> -->
-  <bean class="voya.core.functions.CreateRegionFunction"/>
+  <bean class="com.geode.gfsh.GfshFunction"/>
 </beans>
