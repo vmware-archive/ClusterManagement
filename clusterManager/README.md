@@ -5,6 +5,7 @@ This permits the regions to be stored into the cluster configuration service.
 
 Requirements: 
 1) Create the jar file from the project directory. Run mvn package with "skip tests"
+$ mvn clean compile test-compile package -DskipTests
 
 2) You will need to bring up a locator on localhost[10334] before running. For convenience I have provided the grid subdirectory. Launch startall.sh in the grid subdirectory.
 $ cd grid

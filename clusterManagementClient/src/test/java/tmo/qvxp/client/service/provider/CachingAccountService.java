@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
 
 import tmo.qvxp.client.dao.AccountDao;
 import tmo.qvxp.client.service.AccountService;
-import tmo.qvxp.core.domain.Account;
+import tmo.qvxp.domain.Account;
 
 /**
  * The CachingAccountsService class is an implementation of the AccountService interface implementing business functions
@@ -21,7 +21,7 @@ import tmo.qvxp.core.domain.Account;
  *
  * @author jb
  * @see org.springframework.stereotype.Service
- * @see tmo.qvxp.core.domain.Account
+ * @see tmo.qvxp.domain.Account
  * @see tmo.qvxp.client.dao.AccountDao
  * @see tmo.qvxp.client.service.AccountService
  */

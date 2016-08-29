@@ -1,12 +1,12 @@
 package tmo.qvxp.client.service;
 
-import tmo.qvxp.core.domain.Account;
+import tmo.qvxp.domain.Account;
 
 /**
  * The AccountService class is a Service component for processing VOYA Accounts.
  *
  * @author jb
- * @see tmo.qvxp.core.domain.Account
+ * @see tmo.qvxp.domain.Account
  */
 public interface AccountService {
 

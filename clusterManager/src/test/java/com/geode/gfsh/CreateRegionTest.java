@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.CacheXmlException;
 import com.gemstone.gemfire.cache.execute.FunctionException;
 import com.gemstone.gemfire.cache.execute.FunctionService;
 import com.gemstone.gemfire.cache.execute.ResultCollector;
@@ -28,11 +30,34 @@ public class CreateRegionTest {
   
     @BeforeClass
     public static void init() {
-      CacheFactory cf = new CacheFactory();
-          cf.set("cache-xml-file", "./grid/locator1/cluster_config/cluster/cluster.xml");
+      System.out.println("##############################");
+      System.out.println("Setting path to: " + Paths.get(".").toAbsolutePath().toString());
+      String pathToConfigFile = "./grid/locator1/cluster_config/cluster/cluster.xml";
+      
+      CacheFactory cf;
+      try {
+      cf = new CacheFactory();
+          cf.set("cache-xml-file", pathToConfigFile);
           cf.set("locators", "localhost[10334]");
+          cache = cf.create();
+      }
+      catch (CacheXmlException e) {
+        System.out.println("##############################");
+        System.out.println("Resetting path to: " + Paths.get(".").toAbsolutePath().toString());
+        pathToConfigFile = "./cluster.xml";
+        cf = new CacheFactory();
+          cf.set("cache-xml-file", pathToConfigFile);
+          cf.set("locators", "localhost[10334]");
+          cache = cf.create();
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+        cf = new CacheFactory();
+        cf.set("cache-xml-file", pathToConfigFile);
+        cf.set("locators", "localhost[10334]");
+        cache = cf.create();
+     }
           
-      cache = cf.create();
       gfshCommand = new GfshCommand(cache.getLogger());
     }
 

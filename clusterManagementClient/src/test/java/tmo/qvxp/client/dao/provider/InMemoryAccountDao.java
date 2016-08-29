@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import tmo.qvxp.client.dao.AccountDao;
-import tmo.qvxp.core.domain.Account;
+import tmo.qvxp.domain.Account;
 
 /**
  * The AccountDaoImpl class is an implementation of the AccountDao interface used by client applications to load
@@ -24,7 +24,7 @@ import tmo.qvxp.core.domain.Account;
  * @author jb
  * @see org.springframework.stereotype.Repository
  * @see tmo.qvxp.client.dao.AccountDao
- * @see tmo.qvxp.core.domain.Account
+ * @see tmo.qvxp.domain.Account
  */
 @Repository("accountDao")
 public class InMemoryAccountDao implements AccountDao {

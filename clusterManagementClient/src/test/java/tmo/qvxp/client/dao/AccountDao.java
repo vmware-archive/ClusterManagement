@@ -1,13 +1,13 @@
 package tmo.qvxp.client.dao;
 
-import tmo.qvxp.core.domain.Account;
+import tmo.qvxp.domain.Account;
 
 /**
  * The AccountsDao interface is a Data Access Object (DAO) defining data access (CRUD-based) operations on VOYA Accounts
  * stored in external data source(s).
  *
  * @author jb
- * @see tmo.qvxp.core.domain.Account
+ * @see tmo.qvxp.domain.Account
  */
 public interface AccountDao {
 

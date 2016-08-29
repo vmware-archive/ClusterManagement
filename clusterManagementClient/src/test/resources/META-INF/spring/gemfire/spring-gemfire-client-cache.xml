@@ -31,7 +31,7 @@
     <constructor-arg type="boolean" value="true"/>
     <constructor-arg>
       <list>
-        <value>tmo.qvxp.core.domain.Account</value>
+        <value>tmo.qvxp.domain.Account</value>
       </list>
     </constructor-arg>
   </bean>

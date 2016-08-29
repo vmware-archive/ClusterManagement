@@ -69,4 +69,103 @@
       </eviction-attributes>
     </region-attributes>
   </region>
+  <region name="Test398">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test568">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test220">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test553">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test798">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test323">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test845">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test904">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Customer">
+    <region-attributes data-policy="partition"/>
+  </region>
+  <region name="Test111">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test954">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test908">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
+  <region name="Test255">
+    <region-attributes data-policy="partition">
+      <partition-attributes redundant-copies="1"/>
+      <eviction-attributes>
+        <lru-heap-percentage action="local-destroy"/>
+      </eviction-attributes>
+    </region-attributes>
+  </region>
 </cache>

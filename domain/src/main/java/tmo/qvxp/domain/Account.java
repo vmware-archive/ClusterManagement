@@ -3,7 +3,7 @@ package tmo.qvxp.domain;
 import org.springframework.util.ObjectUtils;
 
 /**
- * The Account class is an abstract data type (ADT) for modeling a VOYA Account.
+ * The Account class is an sample domain object 
  *
  * @author Pivotal
  */

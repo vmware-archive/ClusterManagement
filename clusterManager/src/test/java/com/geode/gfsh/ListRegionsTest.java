@@ -1,6 +1,7 @@
 package com.geode.gfsh;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -10,6 +11,7 @@ import org.springframework.util.Assert;
 
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.CacheXmlException;
 import com.geode.gfsh.list.ListCommandsParser;
 
 public class ListRegionsTest {
@@ -20,11 +22,26 @@ public class ListRegionsTest {
     @BeforeClass
     public static void init() {
     	
-      CacheFactory cf = new CacheFactory();
-          cf.set("cache-xml-file", "./grid/locator1/cluster_config/cluster/cluster.xml");
+      System.out.println("##############################");
+      System.out.println(Paths.get(".").toAbsolutePath().toString());
+      String pathToConfigFile = "./grid/locator1/cluster_config/cluster/cluster.xml";
+      
+      CacheFactory cf;
+      Cache cache;
+      try {
+      cf = new CacheFactory();
+          cf.set("cache-xml-file", pathToConfigFile);
           cf.set("locators", "localhost[10334]");
+          cache = cf.create();
+      }
+      catch (CacheXmlException e) {
+        pathToConfigFile = "./cluster.xml";
+        cf = new CacheFactory();
+          cf.set("cache-xml-file", pathToConfigFile);
+          cf.set("locators", "localhost[10334]");
+          cache = cf.create();
+      }
           
-      Cache cache = cf.create();
       listCommands = new ListCommands(cache.getLogger());
     }
 	@Test

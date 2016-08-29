@@ -27,7 +27,7 @@ import com.gemstone.gemfire.internal.cache.tier.sockets.command.CreateRegion;
 import gemfire.core.cache.manager.RegionCreator;
 import tmo.qvxp.client.dao.AccountDao;
 import tmo.qvxp.client.service.AccountService;
-import tmo.qvxp.core.domain.Account;
+import tmo.qvxp.domain.Account;
 
 /**
  * The TestClient class is a test suite of test classes testing data application
