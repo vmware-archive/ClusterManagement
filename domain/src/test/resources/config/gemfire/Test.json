@@ -1,0 +1,21 @@
+{
+  "server":
+  {
+   "dataPolicy": "PARTITION",
+   "partitionAttributes": {
+     "redundantCopies": 1
+   },
+   "indexUpdateType": "synchronous",
+   "statisticsEnabled": true,
+   "evictionAttributes": {
+     "lruHeapPercentage": {
+      "action": "local-destroy"
+     }
+   }
+  },
+  "client":
+  {
+   "type": "PROXY",
+   "poolName": "publisher"
+  }
+}
