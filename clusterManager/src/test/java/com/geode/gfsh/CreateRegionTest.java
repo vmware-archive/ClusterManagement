@@ -32,7 +32,8 @@ public class CreateRegionTest {
     public static void init() {
       System.out.println("##############################");
       System.out.println("Setting path to: " + Paths.get(".").toAbsolutePath().toString());
-      String pathToConfigFile = "./grid/locator1/cluster_config/cluster/cluster.xml";
+//      String pathToConfigFile = "./grid/locator1/cluster_config/cluster/cluster.xml";
+      String pathToConfigFile = "./cluster.xml";
       
       CacheFactory cf;
       try {

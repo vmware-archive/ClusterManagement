@@ -24,7 +24,8 @@ public class ListRegionsTest {
     	
       System.out.println("##############################");
       System.out.println(Paths.get(".").toAbsolutePath().toString());
-      String pathToConfigFile = "./grid/locator1/cluster_config/cluster/cluster.xml";
+//      String pathToConfigFile = "./grid/locator1/cluster_config/cluster/cluster.xml";
+      String pathToConfigFile = "./cluster.xml";
       
       CacheFactory cf;
       Cache cache;
