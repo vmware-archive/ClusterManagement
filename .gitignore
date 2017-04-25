@@ -16,6 +16,16 @@ local.properties
 BACKUP*
 DRLK*
 
+#gemfire artifacts
+server1/
+*.log
+*.zip
+*.tgz
+*.dat
+BACKUP*
+DRLK*
+
+
 # Eclipse Core
 .project
 
@@ -65,4 +75,4 @@ databrowser/grid/serverx/
 # SpringXD
 spring-shell.log
  
-/Function Performance Analysis.xlsx
+ci/pipeline-vars.yml

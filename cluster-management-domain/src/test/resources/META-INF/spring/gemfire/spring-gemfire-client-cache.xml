@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:gfe="http://www.springframework.org/schema/gemfire"
+       xmlns:gfe-data="http://www.springframework.org/schema/data/gemfire"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire.xsd
+        http://www.springframework.org/schema/data/gemfire http://www.springframework.org/schema/data/gemfire/spring-data-gemfire.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+">
+
+
+  <util:properties id="clientConfigurationSettings">
+    <prop key="cache.specs.directory">specs</prop>
+  </util:properties>
+
+  <context:property-placeholder location="classpath:server.properties" properties-ref="clientConfigurationSettings"/>
+
+  <util:properties id="gemfireCacheConfigurationSettings">
+    <prop key="log-level">config</prop>
+  </util:properties>
+
+  <bean id="autoPdxSerializer" class="org.apache.geode.pdx.ReflectionBasedAutoSerializer">
+    <constructor-arg type="boolean" value="true"/>
+    <constructor-arg>
+      <list>
+        <value>com.geode.management.domain.Account</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <gfe:pool id="serverConnectionPool">
+    <!-- <gfe:server host="${server.hostname-for-clients}" port="${server.port}"/> -->
+    <gfe:locator host="localhost" port="10334"/>
+  </gfe:pool>
+
+  <gfe:client-cache id="gemfireCache" pool-name="serverConnectionPool" pdx-serializer-ref="autoPdxSerializer"/>
+
+  <gfe:client-region id="Accounts" cache-ref="gemfireCache" pool-name="serverConnectionPool" shortcut="PROXY"/>
+
+  <cache:annotation-driven/>
+
+  <bean id="cacheManager" class="gemfire.core.cache.manager.RegionCreationGemFireCacheManager"
+        p:cache-ref="gemfireCache"/>
+   <bean class="com.geode.management.cache.manager.RegionCreator" />
+
+  <context:component-scan base-package="com.geode.management.client"/>
+
+</beans>
